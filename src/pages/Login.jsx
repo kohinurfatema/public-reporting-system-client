@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 
 import { Link, useLocation, useNavigate } from 'react-router';
 import useAuth from '../hooks/useAuth';
+import SocialLogin from './SocialLogin';
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -52,7 +53,7 @@ const Login = () => {
                     className='text-blue-400 underline'
                     to="/register">Register</Link></p>
             </form>
-            
+            <SocialLogin></SocialLogin>
         </div>
     );
 };
