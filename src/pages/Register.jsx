@@ -5,13 +5,19 @@ import { Link } from 'react-router';
 
 
 const Login = () => {
-    const { register, formState: { errors } } = useForm();
+    const { register,handleSubmit, formState: { errors } } = useForm();
+
+
+     const handleRegistration = (data) => {
+
+        console.log('after register', data)
+     }
    
     return (
         <div className="card bg-base-100 w-full mx-auto max-w-sm shrink-0 shadow-2xl">
             <h3 className="text-3xl text-center">Welcome back</h3>
             <p className='text-center'>Please Register</p>
-            <form className="card-body">
+            <form className="card-body" onSubmit={handleSubmit(handleRegistration)}>
                 <fieldset className="fieldset">
                     {/* email field */}
                     <label className="label">Email</label>
