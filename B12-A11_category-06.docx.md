@@ -17,7 +17,7 @@
 * ### Helps collect and analyze infrastructure data
 
 * ### Makes city service delivery more efficient 
-
+ 
 ### **How the System Works**
 
 1. ### Citizens submit a report with issue details, photos, and location.
