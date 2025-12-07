@@ -1,16 +1,28 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router';
 
-
+import { Link, useLocation, useNavigate } from 'react-router';
+import useAuth from '../hooks/useAuth';
 
 const Login = () => {
-    const { register,handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { signInUser } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
 
-     const handleLogin = (data) => {
+
+    const handleLogin = (data) => {
         console.log('form data', data);
-     }
-   
+        signInUser(data.email, data.password)
+            .then(result => {
+                console.log(result.user)
+                navigate(location?.state || '/')
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
     return (
         <div className="card bg-base-100 w-full mx-auto max-w-sm shrink-0 shadow-2xl">
             <h3 className="text-3xl text-center">Welcome back</h3>
@@ -35,12 +47,12 @@ const Login = () => {
                     <div><a className="link link-hover">Forgot password?</a></div>
                     <button className="btn btn-neutral mt-4">Login</button>
                 </fieldset>
-                <p>New to Pothole Patrol <Link
+                <p>New to Zap Shift <Link
                     state={location.state}
                     className='text-blue-400 underline'
                     to="/register">Register</Link></p>
             </form>
-           
+            
         </div>
     );
 };
