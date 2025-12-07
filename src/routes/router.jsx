@@ -25,14 +25,24 @@ export const router = createBrowserRouter([
         path: "all-issues",
         element: <AllIssues />, // Page to display all issues
       },
-      // Placeholder routes for your two extra pages
+     // ✅ Meaningful Public Routes for Extra Pages
       {
         path: "reports",
-      
+        element: (
+            <div className="text-center py-20">
+                <h1 className="text-4xl font-bold">Reports Page</h1>
+                <p className="mt-4">Placeholder for the main Reports and Statistics page.</p>
+            </div>
+        ),
       },
       {
-        path: "extra-page-2",
-        element: <div>Extra Page 2 Content</div>,
+        path: "resources",
+        element: (
+            <div className="text-center py-20">
+                <h1 className="text-4xl font-bold">Resources Page</h1>
+                <p className="mt-4">Placeholder for FAQs, contact info, or system documentation.</p>
+            </div>
+        ),
       },
       // Authentication Routes
       {
