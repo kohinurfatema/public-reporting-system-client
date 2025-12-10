@@ -13,7 +13,7 @@ const Footer = () => {
               </svg>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">Civic Care</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">Patholes Pytrols</p>
               <p className="text-lg font-bold text-white">Report Hub</p>
             </div>
           </div>
@@ -53,7 +53,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="border-t border-white/10 py-4 text-center text-xs text-slate-400">
-        © {new Date().getFullYear()} Civic Care Report Hub. Built for transparent cities.
+        © {new Date().getFullYear()} Pathholes Pytrols Report Hub. Built for transparent cities.
       </div>
     </footer>
   );
