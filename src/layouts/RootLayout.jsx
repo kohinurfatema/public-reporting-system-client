@@ -3,6 +3,7 @@
 import React from 'react';
 import { Outlet } from 'react-router';
 import Navbar from '../pages/Shared/Navbar/Navbar'; // Adjust path if needed
+import Footer from '../pages/Shared/Footer/Footer';
 
 
 const RootLayout = () => {
@@ -17,7 +18,7 @@ const RootLayout = () => {
             </main>
 
             {/* Footer will go here */}
-            {/* <Footer /> */} 
+             <Footer />  
         </div>
     );
 };
