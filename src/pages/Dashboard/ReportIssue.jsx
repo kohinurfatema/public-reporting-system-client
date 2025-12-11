@@ -2,17 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast'; // Used for non-intrusive notifications
-import { useNavigate, Link } from 'react-router-dom';
-import useAuth from '../../../hooks/useAuth'; 
+import toast from 'react-hot-toast'; 
+import { useNavigate, Link } from 'react-router';
+import useAuth from '../../hooks/useAuth';
+
 // import useAxiosSecure from '../../../hooks/useAxiosSecure'; // You will need this for the real API call
 
-// --- MOCK DATA: REPLACE THIS WITH REAL DATA FETCH (Using TanStack Query is recommended) ---
-// You MUST fetch the user's real subscription status and issuesReported count 
-// from your MongoDB database when the user logs in.
+// --- MOCK DATA: REPLACE THIS WITH REAL DATA FETCH ---
+// In a real application, you must fetch the user's real subscription status 
+// and issuesReported count from your MongoDB database upon component mount.
 const mockUserData = {
-    isPremium: false, // Change to true to test unlimited reporting
-    issuesReported: 2, // Free users can report a maximum of 3 issues
+    isPremium: false, // Set to true to test unlimited reporting
+    issuesReported: 2, // Set to 3 or more to test the limit warning
     MAX_FREE_ISSUES: 3
 };
 // --- END MOCK DATA ---
@@ -55,6 +56,7 @@ const ReportIssue = () => {
         if (!imageFile) return null;
         
         console.log("Mocking image upload for:", imageFile.name);
+        // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1500)); 
         return `https://mock-image-url.com/${imageFile.name.substring(0, 10)}`;
     };
@@ -89,8 +91,7 @@ const ReportIssue = () => {
                 category: data.category,
                 location: data.location,
                 imageUrl: imageUrl,
-                // Server must handle the creation of the initial tracking record (timeline)
-                // and setting the default status/priority.
+                // Server must handle creation of initial status (Pending) and timeline.
             };
 
             // 3. Send data to the backend API (e.g., /issues)
@@ -104,8 +105,8 @@ const ReportIssue = () => {
             toast.success('Issue successfully reported! Tracking started.', { id: toastId });
             reset(); // Clear the form
             
-            // 💡 Navigate to the My Issues page as required (using the assumed path derived from MyIssues.jsx)
-            navigate('/dashboard/citizen/MyIssues'); 
+            // Navigate to the My Issues page using the kebab-case path
+            navigate('/dashboard/citizen/my-issues'); 
 
         } catch (error) {
             console.error("Submission Error:", error);
@@ -131,8 +132,8 @@ const ReportIssue = () => {
                         Free user limit reached! You have reported {issueLimit} out of {mockUserData.MAX_FREE_ISSUES} issues.
                         Please subscribe to report unlimited issues.
                     </span>
-                    {/* Link to Profile Page as required (using the path derived from CitizenProfile.jsx) */}
-                    <Link to="/dashboard/citizen/CitizenProfile" className="btn btn-sm btn-warning">
+                    {/* Link to Profile Page using the kebab-case path */}
+                    <Link to="/dashboard/citizen/profile" className="btn btn-sm btn-warning">
                         Subscribe Now
                     </Link>
                 </div>

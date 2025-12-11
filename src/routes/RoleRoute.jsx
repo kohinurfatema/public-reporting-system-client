@@ -2,7 +2,7 @@
 
 import React from 'react';
 import useAuth from '../hooks/useAuth';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 
 const RoleRoute = ({ children, allowedRoles }) => {
     const { user, loading, userRole } = useAuth(); // Assume 'userRole' is provided by useAuth
