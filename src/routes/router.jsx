@@ -7,6 +7,9 @@ import AllIssues from "../pages/AllIssues"; // Assuming this page exists
 import Login from "../pages/Login"; // Assuming this page exists
 import Register from "../pages/Register"; // Assuming this page exists
 import NotFound from "../pages/NotFound"; // Need a 404 page
+import DashboardLayout from "../layouts/DashboardLayout";
+import PrivateRoute from "./PrivateRoute";
+import ReportIssue from "../pages/Dashboard/ReportIssue";
 
 // NOTE: Please ensure the component files (e.g., AllIssues, Login, etc.) 
 // are created in your 'src/pages' directory, even if they are placeholders for now.
@@ -54,15 +57,15 @@ export const router = createBrowserRouter([
         element: <Register />,
       },
       // You will add the Dashboard route here later:
-      /*
-      {
-        path: "dashboard",
-        element: <DashboardLayout />,
-        children: [
+      
+      //{
+       // path: "dashboard",
+       // element: <PrivateRoute><DashboardLayout /></PrivateRoute>
+       // children: [      
           // Nested dashboard routes (admin, staff, citizen)
-        ]
-      }
-      */
+        //]
+      //}
+      
     ],
   },
 ]);
