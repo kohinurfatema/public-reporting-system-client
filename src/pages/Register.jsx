@@ -2,8 +2,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import useAuth from '../hooks/useAuth';
 import { Link, useLocation, useNavigate } from 'react-router';
-
 import axios from 'axios';
+import useAxiosSecure from '../hooks/useAxiosSecure';
 import SocialLogin from './SocialLogin';
 
 const Register = () => {
@@ -11,6 +11,7 @@ const Register = () => {
     const { registerUser, updateUserProfile } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
+    const axiosSecure = useAxiosSecure();
 
     console.log('in register', location)
 
@@ -44,7 +45,17 @@ const Register = () => {
                         updateUserProfile(userProfile)
                             .then(() => {
                                 console.log('user profile updated done.')
-                                navigate(location.state || '/');
+                                // Save user to MongoDB
+                                axiosSecure.post('/users', {
+                                    email: data.email,
+                                    name: data.name,
+                                    photoURL: res.data.data.url
+                                })
+                                .then(() => {
+                                    console.log('user saved to MongoDB')
+                                    navigate(location.state || '/');
+                                })
+                                .catch(err => console.log('MongoDB save error:', err))
                             })
                             .catch(error => console.log(error))
                     })

@@ -1,19 +1,29 @@
 import React from 'react';
-
 import { useLocation, useNavigate } from 'react-router';
 import useAuth from '../hooks/useAuth';
+import useAxiosSecure from '../hooks/useAxiosSecure';
 
 const SocialLogin = () => {
     const { signInGoogle } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
-    
+    const axiosSecure = useAxiosSecure();
 
     const handleGoogleSignIn = () => {
         signInGoogle()
             .then(result => {
                 console.log(result.user);
-                navigate(location.state || '/');
+                // Save user to MongoDB
+                axiosSecure.post('/users', {
+                    email: result.user.email,
+                    name: result.user.displayName,
+                    photoURL: result.user.photoURL
+                })
+                .then(() => {
+                    console.log('user saved to MongoDB')
+                    navigate(location.state || '/');
+                })
+                .catch(err => console.log('MongoDB save error:', err))
             })
             .catch(error => {
                 console.log(error)

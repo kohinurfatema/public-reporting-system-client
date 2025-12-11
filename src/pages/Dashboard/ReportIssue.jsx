@@ -4,19 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast'; 
 import { useNavigate, Link } from 'react-router';
-import useAuth from '../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth' 
+import useAxiosSecure from '../../hooks/useAxiosSecure';  // Make sure this hook exists
+                                           
 
-// import useAxiosSecure from '../../../hooks/useAxiosSecure'; // You will need this for the real API call
-
-// --- MOCK DATA: REPLACE THIS WITH REAL DATA FETCH ---
-// In a real application, you must fetch the user's real subscription status 
-// and issuesReported count from your MongoDB database upon component mount.
-const mockUserData = {
-    isPremium: false, // Set to true to test unlimited reporting
-    issuesReported: 2, // Set to 3 or more to test the limit warning
-    MAX_FREE_ISSUES: 3
-};
-// --- END MOCK DATA ---
+// Define the constant for free user limit
+const MAX_FREE_ISSUES = 3;
 
 const categories = [
     'Pothole',
@@ -28,16 +21,16 @@ const categories = [
 ];
 
 const ReportIssue = () => {
-    const { user } = useAuth();
+    const { user } = useAuth(); // Assuming useAuth provides the logged-in user object
     const navigate = useNavigate();
-    // const axiosSecure = useAxiosSecure(); // For server communication
-
-    // State for conditional rendering
-    const [issueLimit, setIssueLimit] = useState(mockUserData.issuesReported);
-    const [isPremium, setIsPremium] = useState(mockUserData.isPremium);
+    const axiosSecure = useAxiosSecure();
+    // State for conditional rendering, initialized to loading/defaults
+    const [issueLimit, setIssueLimit] = useState(0);
+    const [isPremium, setIsPremium] = useState(false);
+    const [isLoadingStatus, setIsLoadingStatus] = useState(true); 
     
     // Logic for user limit check
-    const isLimitReached = !isPremium && issueLimit >= mockUserData.MAX_FREE_ISSUES;
+    const isLimitReached = !isPremium && issueLimit >= MAX_FREE_ISSUES;
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const {
@@ -47,24 +40,51 @@ const ReportIssue = () => {
         formState: { errors },
     } = useForm();
 
-    // 💡 TODO: Add a useEffect hook here to fetch the REAL user data 
-    // (subscription status and issuesReported count) from your backend.
+    // 🎯 Step 1: Fetch User Status on Load for Limit Check
+    useEffect(() => {
+        if (!user?.email) {
+            setIsLoadingStatus(false);
+            return;
+        }
 
-    // 💡 Image Upload Function (Needs implementation - e.g., ImgBB, Cloudinary)
+        const fetchUserStatus = async () => {
+            try {
+                setIsLoadingStatus(true);
+                // Calls your new GET /users/:email endpoint
+                const res = await axiosSecure.get(`/users/${user.email}`); 
+                
+                // Update client state with server data
+                setIssueLimit(res.data.issuesReportedCount);
+                setIsPremium(res.data.isPremium);
+
+            } catch (err) {
+                console.error("Failed to fetch user status:", err);
+                // If user is not found, assume default free status
+                setIssueLimit(0);
+                setIsPremium(false);
+                toast.error("Failed to load user limits. Defaulting to free status.");
+            } finally {
+                setIsLoadingStatus(false);
+            }
+        };
+
+        fetchUserStatus();
+    }, [user, axiosSecure]); 
+
+    // 💡 Placeholder for Image Upload
     const uploadImage = async (imageFile) => {
-        // This is a placeholder for your actual ImgBB/Cloudinary upload logic.
+        // NOTE: Implement your actual ImgBB/Cloudinary upload logic here.
         if (!imageFile) return null;
-        
         console.log("Mocking image upload for:", imageFile.name);
-        // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1500)); 
         return `https://mock-image-url.com/${imageFile.name.substring(0, 10)}`;
     };
 
 
+    // 🎯 Step 2: Handle Form Submission
     const onSubmit = async (data) => {
         if (isLimitReached) {
-            toast.error("Issue limit reached. Please subscribe to Premium.");
+            toast.error(`Issue limit reached. Please subscribe to Premium.`);
             return;
         }
         
@@ -83,40 +103,45 @@ const ReportIssue = () => {
                 imageUrl = await uploadImage(data.image[0]);
             }
 
-            // 2. Prepare the final issue data
-            const newIssue = {
+            // 2. Prepare the final issue data for the server (Matching server schema)
+            const issueDataToSend = {
                 reporterEmail: user.email, 
                 title: data.title,
                 description: data.description,
                 category: data.category,
                 location: data.location,
                 imageUrl: imageUrl,
-                // Server must handle creation of initial status (Pending) and timeline.
             };
 
-            // 3. Send data to the backend API (e.g., /issues)
-            // const response = await axiosSecure.post('/issues', newIssue);
+            // 3. Send data to the backend API (POST /issues)
+            // This calls the endpoint you just finished on the server!
+            const response = await axiosSecure.post('/issues', issueDataToSend);
             
-            // --- MOCK BACKEND CALL ---
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            // --- END MOCK ---
-
-
-            toast.success('Issue successfully reported! Tracking started.', { id: toastId });
+            toast.success(response.data.message || 'Issue successfully reported!', { id: toastId });
             reset(); // Clear the form
             
-            // Navigate to the My Issues page using the kebab-case path
+            // 4. Update the local count and navigate
+            setIssueLimit(prev => prev + 1); // Optimistic update
             navigate('/dashboard/citizen/my-issues'); 
 
         } catch (error) {
-            console.error("Submission Error:", error);
-            const errorMessage = error.response?.data?.message || 'Failed to report issue. Please try again.';
-            toast.error(errorMessage, { id: toastId });
+            const serverMessage = error.response?.data?.message || 'Failed to report issue. Please try again.';
+            
+            // Handle the specific 403 limit error from the server
+            if (error.response?.status === 403) {
+                 toast.error(serverMessage); 
+            } else {
+                 toast.error(serverMessage, { id: toastId });
+            }
         } finally {
             setIsSubmitting(false);
         }
     };
 
+
+    if (isLoadingStatus) {
+        return <div className="text-center py-20"><span className="loading loading-spinner loading-lg"></span><p>Checking user subscription status and limits...</p></div>;
+    }
 
     return (
         <div className="p-4 md:p-8">
@@ -129,10 +154,10 @@ const ReportIssue = () => {
                 <div role="alert" className="alert alert-warning mb-6 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856a2 2 0 001.789-3.327L13.789 5.071a2 2 0 00-3.578 0L3.341 16.673A2 2 0 005.13 20z" /></svg>
                     <span>
-                        Free user limit reached! You have reported {issueLimit} out of {mockUserData.MAX_FREE_ISSUES} issues.
+                        Free user limit reached! You have reported {issueLimit} out of {MAX_FREE_ISSUES} issues.
                         Please subscribe to report unlimited issues.
                     </span>
-                    {/* Link to Profile Page using the kebab-case path */}
+                    {/* Link to Profile Page for subscription */}
                     <Link to="/dashboard/citizen/profile" className="btn btn-sm btn-warning">
                         Subscribe Now
                     </Link>

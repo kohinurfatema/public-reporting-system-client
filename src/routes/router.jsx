@@ -12,6 +12,7 @@ import PrivateRoute from "./PrivateRoute";
 import ReportIssue from "../pages/Dashboard/ReportIssue";
 import RoleRoute from "./RoleRoute";
 import CitizenDashboard from "../pages/Dashboard/CitizenDashboard";
+import MyIssues from "../pages/Dashboard/MyIssues";
 
 // NOTE: Please ensure the component files (e.g., AllIssues, Login, etc.) 
 // are created in your 'src/pages' directory, even if they are placeholders for now.
@@ -70,6 +71,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleRoute allowedRoles={['citizen']}>
             <CitizenDashboard />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: "citizen/my-issues",
+        element: (
+          <RoleRoute allowedRoles={['citizen']}>
+            <MyIssues />
           </RoleRoute>
         ),
       },
