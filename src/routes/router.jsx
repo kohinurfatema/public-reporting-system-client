@@ -15,6 +15,7 @@ import CitizenDashboard from "../pages/Dashboard/CitizenDashboard";
 import MyIssues from "../pages/Dashboard/MyIssues";
 import CitizenProfile from "../pages/Dashboard/CitizenProfile";
 import CitizenDashboardHome from "../pages/Dashboard/CitizenDashboardHome";
+import IssueDetails from "../pages/Dashboard/IssueDetails";
 
 // NOTE: Please ensure the component files (e.g., AllIssues, Login, etc.) 
 // are created in your 'src/pages' directory, even if they are placeholders for now.
@@ -61,54 +62,54 @@ export const router = createBrowserRouter([
         path: "register",
         element: <Register />,
       },
-     // --- DASHBOARD ROUTES (Nested Structure) ---
-    {
+      // --- DASHBOARD ROUTES (Nested Structure) ---
+      {
         path: "dashboard",
         element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
         children: [
-            // 🎯 CITIZEN DASHBOARD (PARENT ROUTE)
-            {
-                // The main layout route /dashboard/citizen
-                path: "citizen", 
-                element: (
-                    <RoleRoute allowedRoles={['citizen']}>
-                        <CitizenDashboard />
-                    </RoleRoute>
-                ),
-                children: [
-                    // 1. Citizen Home (Stats Overview) - Index Route
-                    {
-                        path: '', 
-                        index: true, // Maps to the base path /dashboard/citizen
-                        element: <CitizenDashboardHome />,
-                    },
-                    
-                    // 2. Report New Issue
-                    {
-                        path: "report-issue", 
-                        element: <ReportIssue />,
-                    },
-                    
-                    // 3. My Reported Issues (List, Filter, Edit, Delete)
-                    {
-                        path: "my-issues", 
-                        element: <MyIssues />,
-                    },
-                    
-                    // 4. Profile & Subscription
-                    {
-                        path: "profile", 
-                        element: <CitizenProfile />,
-                    },
-                    
-                    // 5. Issue Details (Ready for implementation)
-                    // {
-                    //    path: 'issue-details/:id', 
-                    //    element: <IssueDetails />,
-                    // },
-                ],
-           },
-          ]
+          // 🎯 CITIZEN DASHBOARD (PARENT ROUTE)
+          {
+            // The main layout route /dashboard/citizen
+            path: "citizen",
+            element: (
+              <RoleRoute allowedRoles={['citizen']}>
+                <CitizenDashboard />
+              </RoleRoute>
+            ),
+            children: [
+              // 1. Citizen Home (Stats Overview) - Index Route
+              {
+                path: '',
+                index: true, // Maps to the base path /dashboard/citizen
+                element: <CitizenDashboardHome />,
+              },
+
+              // 2. Report New Issue
+              {
+                path: "report-issue",
+                element: <ReportIssue />,
+              },
+
+              // 3. My Reported Issues (List, Filter, Edit, Delete)
+              {
+                path: "my-issues",
+                element: <MyIssues />,
+              },
+
+              // 4. Profile & Subscription
+              {
+                path: "profile",
+                element: <CitizenProfile />,
+              },
+              {
+                path: 'issue-details/:id', 
+                element: <IssueDetails />,
+              },
+
+              
+            ],
+          },
+        ]
       }
 
     ],
