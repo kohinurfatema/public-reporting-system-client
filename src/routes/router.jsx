@@ -14,6 +14,7 @@ import RoleRoute from "./RoleRoute";
 import CitizenDashboard from "../pages/Dashboard/CitizenDashboard";
 import MyIssues from "../pages/Dashboard/MyIssues";
 import CitizenProfile from "../pages/Dashboard/CitizenProfile";
+import CitizenDashboardHome from "../pages/Dashboard/CitizenDashboardHome";
 
 // NOTE: Please ensure the component files (e.g., AllIssues, Login, etc.) 
 // are created in your 'src/pages' directory, even if they are placeholders for now.
@@ -32,23 +33,23 @@ export const router = createBrowserRouter([
         path: "all-issues",
         element: <AllIssues />, // Page to display all issues
       },
-     // ✅ Meaningful Public Routes for Extra Pages
+      // ✅ Meaningful Public Routes for Extra Pages
       {
         path: "reports",
         element: (
-            <div className="text-center py-20">
-                <h1 className="text-4xl font-bold">Reports Page</h1>
-                <p className="mt-4">Placeholder for the main Reports and Statistics page.</p>
-            </div>
+          <div className="text-center py-20">
+            <h1 className="text-4xl font-bold">Reports Page</h1>
+            <p className="mt-4">Placeholder for the main Reports and Statistics page.</p>
+          </div>
         ),
       },
       {
         path: "resources",
         element: (
-            <div className="text-center py-20">
-                <h1 className="text-4xl font-bold">Resources Page</h1>
-                <p className="mt-4">Placeholder for FAQs, contact info, or system documentation.</p>
-            </div>
+          <div className="text-center py-20">
+            <h1 className="text-4xl font-bold">Resources Page</h1>
+            <p className="mt-4">Placeholder for FAQs, contact info, or system documentation.</p>
+          </div>
         ),
       },
       // Authentication Routes
@@ -61,47 +62,52 @@ export const router = createBrowserRouter([
         element: <Register />,
       },
       // You will add the Dashboard route here later:
-      
+
       {
         path: "dashboard",
-        element:  <PrivateRoute><DashboardLayout /></PrivateRoute>,
+        element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
         children: [
-      // Citizen Dashboard Routes
-      {
-        path: "citizen",
-        element: (
-          <RoleRoute allowedRoles={['citizen']}>
-            <CitizenDashboard />
-          </RoleRoute>
-        ),
-      },
-      {
-        path: "citizen/my-issues",
-        element: (
-          <RoleRoute allowedRoles={['citizen']}>
-            <MyIssues />
-          </RoleRoute>
-        ),
-      },
-       {
-        path: "citizen/report-issue",
-        element: (
-          <RoleRoute allowedRoles={['citizen']}>
-            <ReportIssue />
-          </RoleRoute>
-        ),
-      },
-       {
-        path: "citizen/profile",
-        element: (
-          <RoleRoute allowedRoles={['citizen']}>
-            <CitizenProfile />
-          </RoleRoute>
-        ),
-      },
-       ]
+          // Citizen Dashboard Routes
+          {
+            path: 'citizen',
+            index: true, // Maps to the base path /dashboard/citizen
+            element: <CitizenDashboardHome />,
+          },
+          {
+            path: "citizen",
+            element: (
+              <RoleRoute allowedRoles={['citizen']}>
+                <CitizenDashboard />
+              </RoleRoute>
+            ),
+          },
+          {
+            path: "citizen/my-issues",
+            element: (
+              <RoleRoute allowedRoles={['citizen']}>
+                <MyIssues />
+              </RoleRoute>
+            ),
+          },
+          {
+            path: "citizen/report-issue",
+            element: (
+              <RoleRoute allowedRoles={['citizen']}>
+                <ReportIssue />
+              </RoleRoute>
+            ),
+          },
+          {
+            path: "citizen/profile",
+            element: (
+              <RoleRoute allowedRoles={['citizen']}>
+                <CitizenProfile />
+              </RoleRoute>
+            ),
+          },
+        ]
       }
-      
+
     ],
   },
 ]);
