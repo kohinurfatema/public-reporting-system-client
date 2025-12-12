@@ -176,8 +176,8 @@ const MyIssues = () => {
     }
 
     return (
-        <div className="p-4 md:p-8">
-            <h2 className="text-3xl font-bold text-center text-primary mb-8">
+        <div className="p-2 md:p-4">
+            <h2 className="text-2xl font-bold text-primary mb-6">
                 My Reported Issues ({issues.length})
             </h2>
 
@@ -234,10 +234,10 @@ const MyIssues = () => {
                 </div>
             ) : (
                 <div className="overflow-x-auto">
-                    <table className="table w-full table-zebra shadow-xl">
+                    <table className="table table-xs md:table-sm w-full table-zebra shadow-xl">
                         {/* head */}
                         <thead>
-                            <tr className='bg-primary text-white'>
+                            <tr className='bg-primary text-white text-xs'>
                                 <th>#</th>
                                 <th>Title</th>
                                 <th>Category</th>
@@ -246,46 +246,48 @@ const MyIssues = () => {
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="text-xs md:text-sm">
                             {issues.map((issue, index) => (
                                 <tr key={issue._id}>
                                     <th>{index + 1}</th>
-                                    <td>{issue.title}</td>
+                                    <td className="max-w-[120px] truncate">{issue.title}</td>
                                     <td>{issue.category}</td>
                                     <td>
-                                        <div className={`badge ${getStatusBadge(issue.status)} text-white`}>
+                                        <div className={`badge badge-sm ${getStatusBadge(issue.status)} text-white`}>
                                             {issue.status}
                                         </div>
                                     </td>
-                                    <td>{new Date(issue.createdAt).toLocaleDateString()}</td>
-                                    <td className='flex gap-2'>
-                                        {/* View Details Button */}
-                                        <Link 
-                                            to={`/dashboard/citizen/issue-details/${issue._id}`} 
-                                            className="btn btn-sm btn-outline btn-primary"
-                                        >
-                                            View Details
-                                        </Link>
+                                    <td className="whitespace-nowrap">{new Date(issue.createdAt).toLocaleDateString()}</td>
+                                    <td>
+                                        <div className="flex gap-1">
+                                            {/* View Details Button */}
+                                            <Link
+                                                to={`/dashboard/citizen/issue-details/${issue._id}`}
+                                                className="btn btn-xs btn-outline btn-primary"
+                                            >
+                                                View
+                                            </Link>
 
-                                        {/* Edit Button (Only if Pending) */}
-                                        {issue.status === 'Pending' && (
-                                            <button 
-                                                className="btn btn-sm btn-warning"
-                                                onClick={() => handleEditClick(issue)}
-                                            >
-                                                Edit
-                                            </button>
-                                        )}
-                                        
-                                        {/* Delete Button (Only if Pending) */}
-                                        {issue.status === 'Pending' && (
-                                            <button 
-                                                className="btn btn-sm btn-error"
-                                                onClick={() => handleDeleteIssue(issue._id, issue.title)}
-                                            >
-                                                Delete
-                                            </button>
-                                        )}
+                                            {/* Edit Button (Only if Pending) */}
+                                            {issue.status === 'Pending' && (
+                                                <button
+                                                    className="btn btn-xs btn-warning"
+                                                    onClick={() => handleEditClick(issue)}
+                                                >
+                                                    Edit
+                                                </button>
+                                            )}
+
+                                            {/* Delete Button (Only if Pending) */}
+                                            {issue.status === 'Pending' && (
+                                                <button
+                                                    className="btn btn-xs btn-error"
+                                                    onClick={() => handleDeleteIssue(issue._id, issue.title)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

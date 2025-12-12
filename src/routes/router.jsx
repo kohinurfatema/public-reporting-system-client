@@ -61,51 +61,54 @@ export const router = createBrowserRouter([
         path: "register",
         element: <Register />,
       },
-      // You will add the Dashboard route here later:
-
-      {
+     // --- DASHBOARD ROUTES (Nested Structure) ---
+    {
         path: "dashboard",
         element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
         children: [
-          // Citizen Dashboard Routes
-          {
-            path: 'citizen',
-            index: true, // Maps to the base path /dashboard/citizen
-            element: <CitizenDashboardHome />,
-          },
-          {
-            path: "citizen",
-            element: (
-              <RoleRoute allowedRoles={['citizen']}>
-                <CitizenDashboard />
-              </RoleRoute>
-            ),
-          },
-          {
-            path: "citizen/my-issues",
-            element: (
-              <RoleRoute allowedRoles={['citizen']}>
-                <MyIssues />
-              </RoleRoute>
-            ),
-          },
-          {
-            path: "citizen/report-issue",
-            element: (
-              <RoleRoute allowedRoles={['citizen']}>
-                <ReportIssue />
-              </RoleRoute>
-            ),
-          },
-          {
-            path: "citizen/profile",
-            element: (
-              <RoleRoute allowedRoles={['citizen']}>
-                <CitizenProfile />
-              </RoleRoute>
-            ),
-          },
-        ]
+            // 🎯 CITIZEN DASHBOARD (PARENT ROUTE)
+            {
+                // The main layout route /dashboard/citizen
+                path: "citizen", 
+                element: (
+                    <RoleRoute allowedRoles={['citizen']}>
+                        <CitizenDashboard />
+                    </RoleRoute>
+                ),
+                children: [
+                    // 1. Citizen Home (Stats Overview) - Index Route
+                    {
+                        path: '', 
+                        index: true, // Maps to the base path /dashboard/citizen
+                        element: <CitizenDashboardHome />,
+                    },
+                    
+                    // 2. Report New Issue
+                    {
+                        path: "report-issue", 
+                        element: <ReportIssue />,
+                    },
+                    
+                    // 3. My Reported Issues (List, Filter, Edit, Delete)
+                    {
+                        path: "my-issues", 
+                        element: <MyIssues />,
+                    },
+                    
+                    // 4. Profile & Subscription
+                    {
+                        path: "profile", 
+                        element: <CitizenProfile />,
+                    },
+                    
+                    // 5. Issue Details (Ready for implementation)
+                    // {
+                    //    path: 'issue-details/:id', 
+                    //    element: <IssueDetails />,
+                    // },
+                ],
+           },
+          ]
       }
 
     ],
