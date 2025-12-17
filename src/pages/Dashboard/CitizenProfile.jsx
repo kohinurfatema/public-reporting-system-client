@@ -82,13 +82,13 @@ const CitizenProfile = () => {
         }
     };
 
-    // --- 2. Handle Subscription ---
+    // --- 2. Handle Subscription with Stripe Checkout ---
     const handleSubscribe = async () => {
         const SUBSCRIPTION_FEE = 1000;
 
         Swal.fire({
-            title: `Pay ${SUBSCRIPTION_FEE}tk?`,
-            text: `Confirm payment to become a Premium User and unlock unlimited reports.`,
+            title: 'Premium Subscription',
+            text: `Pay ${SUBSCRIPTION_FEE} BDT via Stripe to unlock unlimited issue reporting.`,
             icon: 'info',
             showCancelButton: true,
             confirmButtonColor: '#38bdf8',
@@ -96,19 +96,24 @@ const CitizenProfile = () => {
             confirmButtonText: 'Proceed to Payment'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const toastId = toast.loading('Processing subscription...');
+                const toastId = toast.loading('Redirecting to payment...');
 
                 try {
-                    // Create payment record
-                    await axiosSecure.post('/payments', {
+                    // Create Stripe Checkout Session
+                    const response = await axiosSecure.post('/payments/create-checkout-session', {
                         type: 'subscription'
                     });
 
-                    toast.success('Premium subscription activated!', { id: toastId });
-                    setDbUserData(prev => ({ ...prev, isPremium: true }));
+                    toast.dismiss(toastId);
 
+                    // Redirect to Stripe Checkout
+                    if (response.data.url) {
+                        window.location.href = response.data.url;
+                    } else {
+                        toast.error('Failed to create payment session');
+                    }
                 } catch (error) {
-                    const errorMessage = error.response?.data?.message || 'Subscription failed.';
+                    const errorMessage = error.response?.data?.message || 'Failed to initiate payment.';
                     toast.error(errorMessage, { id: toastId });
                 }
             }

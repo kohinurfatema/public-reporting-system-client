@@ -27,6 +27,8 @@ import StaffDashboard from "../pages/Dashboard/Staff/StaffDashboard";
 import StaffDashboardHome from "../pages/Dashboard/Staff/StaffDashboardHome";
 import StaffAssignedIssues from "../pages/Dashboard/Staff/StaffAssignedIssues";
 import StaffProfile from "../pages/Dashboard/Staff/StaffProfile";
+import PaymentSuccess from "../pages/PaymentSuccess";
+import PaymentCancel from "../pages/PaymentCancel";
 
 // NOTE: Please ensure the component files (e.g., AllIssues, Login, etc.)
 // are created in your 'src/pages' directory, even if they are placeholders for now.
@@ -72,6 +74,15 @@ export const router = createBrowserRouter([
       {
         path: "register",
         element: <Register />,
+      },
+      // Payment Routes (Private - requires authentication)
+      {
+        path: "payment-success",
+        element: <PrivateRoute><PaymentSuccess /></PrivateRoute>,
+      },
+      {
+        path: "payment-cancel",
+        element: <PrivateRoute><PaymentCancel /></PrivateRoute>,
       },
       // --- DASHBOARD ROUTES (Nested Structure) ---
       {

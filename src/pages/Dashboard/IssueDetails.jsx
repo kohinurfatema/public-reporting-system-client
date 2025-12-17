@@ -106,36 +106,39 @@ const IssueDetails = () => {
         });
     };
     
-    // --- Handle Boost Logic (Placeholder for payment flow) ---
+    // --- Handle Boost Logic with Stripe Checkout ---
     const handleBoost = async () => {
-        // --- 1. Initiate Payment (Stripe or similar flow would go here) ---
-        // For now, we simulate success and move to the server update step.
         const confirmation = await Swal.fire({
-            title: 'Confirm Boost Payment',
-            text: `Do you confirm paying ${ISSUE_BOOST_PRICE}tk to boost this issue's priority to HIGH?`,
+            title: 'Boost Issue Priority',
+            text: `Pay ${ISSUE_BOOST_PRICE} BDT via Stripe to boost this issue's priority to HIGH?`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, Pay and Boost!'
+            confirmButtonText: 'Proceed to Payment'
         });
 
         if (!confirmation.isConfirmed) return;
 
-        // --- 2. Call Server Endpoint to Update Priority ---
-        const toastId = toast.loading(`Boosting issue for ${ISSUE_BOOST_PRICE}tk...`);
+        const toastId = toast.loading('Redirecting to payment...');
         try {
-            // NOTE: We need a new endpoint for boosting.
-            // Example: PATCH /issues/boost/:id
-            await axiosSecure.patch(`/issues/boost/${issue._id}`, { 
-                amount: ISSUE_BOOST_PRICE,
-                paymentMethod: 'Simulated' // Placeholder for real payment ID
+            // Create Stripe Checkout Session
+            const response = await axiosSecure.post('/payments/create-checkout-session', {
+                type: 'boost',
+                issueId: issue._id,
+                issueTitle: issue.title
             });
 
-            toast.success('Issue priority successfully boosted!', { id: toastId });
-            fetchIssueDetails(); // Refresh data to show new priority/timeline
+            toast.dismiss(toastId);
+
+            // Redirect to Stripe Checkout
+            if (response.data.url) {
+                window.location.href = response.data.url;
+            } else {
+                toast.error('Failed to create payment session');
+            }
         } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Boost failed. Check subscription/funds.';
+            const errorMessage = error.response?.data?.message || 'Failed to initiate payment.';
             toast.error(errorMessage, { id: toastId });
         }
     };
