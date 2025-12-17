@@ -16,8 +16,19 @@ import MyIssues from "../pages/Dashboard/MyIssues";
 import CitizenProfile from "../pages/Dashboard/CitizenProfile";
 import CitizenDashboardHome from "../pages/Dashboard/CitizenDashboardHome";
 import IssueDetails from "../pages/Dashboard/IssueDetails";
+import AdminDashboard from "../pages/Dashboard/Admin/AdminDashboard";
+import AdminDashboardHome from "../pages/Dashboard/Admin/AdminDashboardHome";
+import AdminAllIssues from "../pages/Dashboard/Admin/AdminAllIssues";
+import AdminManageUsers from "../pages/Dashboard/Admin/AdminManageUsers";
+import AdminManageStaff from "../pages/Dashboard/Admin/AdminManageStaff";
+import AdminPayments from "../pages/Dashboard/Admin/AdminPayments";
+import AdminProfile from "../pages/Dashboard/Admin/AdminProfile";
+import StaffDashboard from "../pages/Dashboard/Staff/StaffDashboard";
+import StaffDashboardHome from "../pages/Dashboard/Staff/StaffDashboardHome";
+import StaffAssignedIssues from "../pages/Dashboard/Staff/StaffAssignedIssues";
+import StaffProfile from "../pages/Dashboard/Staff/StaffProfile";
 
-// NOTE: Please ensure the component files (e.g., AllIssues, Login, etc.) 
+// NOTE: Please ensure the component files (e.g., AllIssues, Login, etc.)
 // are created in your 'src/pages' directory, even if they are placeholders for now.
 
 export const router = createBrowserRouter([
@@ -106,7 +117,67 @@ export const router = createBrowserRouter([
                 element: <IssueDetails />,
               },
 
-              
+
+            ],
+          },
+          // ADMIN DASHBOARD (PARENT ROUTE)
+          {
+            path: "admin",
+            element: (
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </RoleRoute>
+            ),
+            children: [
+              {
+                path: '',
+                index: true,
+                element: <AdminDashboardHome />,
+              },
+              {
+                path: "all-issues",
+                element: <AdminAllIssues />,
+              },
+              {
+                path: "manage-users",
+                element: <AdminManageUsers />,
+              },
+              {
+                path: "manage-staff",
+                element: <AdminManageStaff />,
+              },
+              {
+                path: "payments",
+                element: <AdminPayments />,
+              },
+              {
+                path: "profile",
+                element: <AdminProfile />,
+              },
+            ],
+          },
+          // STAFF DASHBOARD (PARENT ROUTE)
+          {
+            path: "staff",
+            element: (
+              <RoleRoute allowedRoles={['staff']}>
+                <StaffDashboard />
+              </RoleRoute>
+            ),
+            children: [
+              {
+                path: '',
+                index: true,
+                element: <StaffDashboardHome />,
+              },
+              {
+                path: "assigned-issues",
+                element: <StaffAssignedIssues />,
+              },
+              {
+                path: "profile",
+                element: <StaffProfile />,
+              },
             ],
           },
         ]

@@ -1,24 +1,33 @@
-// src/pages/Home.jsx (Initial Structure)
+// src/pages/Home.jsx
 
 import React from 'react';
 import BannerSection from '../components/Home/BannerSection';
+import LatestResolvedIssues from '../components/Home/LatestResolvedIssues';
+import FeaturesSection from '../components/Home/FeaturesSection';
+import HowItWorks from '../components/Home/HowItWorks';
+import StatsSection from '../components/Home/StatsSection';
+import CTASection from '../components/Home/CTASection';
 
 const Home = () => {
   return (
-    <div className=''>
+    <div>
       {/* 1. Banner Section */}
-      <BannerSection /> 
-      
-      {/* 2. Latest Resolved Issues (Next Task) */}
-      <section className='container mx-auto px-4'>
-        {/* Placeholder for Latest Resolved Issues */}
-        <h2 className='text-3xl font-bold mb-8'>Latest Resolved Issues</h2>
-        {/* Content goes here... */}
-      </section>
+      <BannerSection />
 
-      {/* 3. Application Features Section (Next Task) */}
-      
-      {/* 4. How It Works Section (Next Task) */}
+      {/* 2. Latest Resolved Issues */}
+      <LatestResolvedIssues />
+
+      {/* 3. Application Features Section */}
+      <FeaturesSection />
+
+      {/* 4. How It Works Section */}
+      <HowItWorks />
+
+      {/* 5. Stats Section (Extra Section 1) */}
+      <StatsSection />
+
+      {/* 6. CTA Section (Extra Section 2) */}
+      <CTASection />
     </div>
   );
 };

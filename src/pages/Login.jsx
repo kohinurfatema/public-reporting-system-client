@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router';
 import useAuth from '../hooks/useAuth';
 import useAxiosSecure from '../hooks/useAxiosSecure';
 import SocialLogin from './SocialLogin';
+import toast from 'react-hot-toast';
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -11,28 +12,33 @@ const Login = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const axiosSecure = useAxiosSecure();
+    const [isLoading, setIsLoading] = useState(false);
 
 
-    const handleLogin = (data) => {
-        console.log('form data', data);
-        signInUser(data.email, data.password)
-            .then(result => {
-                console.log(result.user)
-                // Save/check user in MongoDB
-                axiosSecure.post('/users', {
-                    email: result.user.email,
-                    name: result.user.displayName,
-                    photoURL: result.user.photoURL
-                })
-                .then(() => {
-                    console.log('user saved to MongoDB')
-                    navigate(location?.state || '/')
-                })
-                .catch(err => console.log('MongoDB save error:', err))
-            })
-            .catch(error => {
-                console.log(error)
-            })
+    const handleLogin = async (data) => {
+        setIsLoading(true);
+        const toastId = toast.loading('Signing in...');
+
+        try {
+            const result = await signInUser(data.email, data.password);
+
+            // Save/check user in MongoDB
+            await axiosSecure.post('/users', {
+                email: result.user.email,
+                name: result.user.displayName,
+                photoURL: result.user.photoURL
+            });
+
+            toast.success('Login successful! Welcome back.', { id: toastId });
+            navigate(location?.state || '/');
+        } catch (error) {
+            const errorMessage = error.code === 'auth/invalid-credential'
+                ? 'Invalid email or password'
+                : error.message || 'Login failed. Please try again.';
+            toast.error(errorMessage, { id: toastId });
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -57,7 +63,9 @@ const Login = () => {
 
 
                     <div><a className="link link-hover">Forgot password?</a></div>
-                    <button className="btn btn-neutral mt-4">Login</button>
+                    <button className="btn btn-neutral mt-4" disabled={isLoading}>
+                        {isLoading ? <span className="loading loading-spinner loading-sm"></span> : 'Login'}
+                    </button>
                 </fieldset>
                 <p>New to Potholes patrols <Link
                     state={location.state}

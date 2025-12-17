@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { FaUserCircle, FaEnvelope, FaTrophy, FaChartLine, FaExclamationCircle, FaLock, FaEdit } from 'react-icons/fa';
+import { FaUserCircle, FaEnvelope, FaTrophy, FaChartLine, FaExclamationCircle, FaLock, FaEdit, FaHistory } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
+import InvoiceDownloadButton from '../../components/Invoice/InvoicePDF';
 
 const CitizenProfile = () => {
     const { user, setUser } = useAuth(); // Need setUser from context to update client-side name/photo
@@ -83,9 +85,7 @@ const CitizenProfile = () => {
     // --- 2. Handle Subscription ---
     const handleSubscribe = async () => {
         const SUBSCRIPTION_FEE = 1000;
-        
-        // This is where you would integrate a payment gateway (e.g., Stripe, SSLCommerz)
-        // For now, we simulate success after confirmation.
+
         Swal.fire({
             title: `Pay ${SUBSCRIPTION_FEE}tk?`,
             text: `Confirm payment to become a Premium User and unlock unlimited reports.`,
@@ -97,16 +97,15 @@ const CitizenProfile = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 const toastId = toast.loading('Processing subscription...');
-                
+
                 try {
-                    // Call the server endpoint to upgrade user status
-                    const res = await axiosSecure.patch(`/users/upgrade/${user.email}`, { amount: SUBSCRIPTION_FEE }); 
-                    
-                    if (res.data.message) {
-                        toast.success(res.data.message, { id: toastId });
-                        // Update UI instantly: Fetch fresh data or manually update state
-                        setDbUserData(prev => ({ ...prev, isPremium: true }));
-                    }
+                    // Create payment record
+                    await axiosSecure.post('/payments', {
+                        type: 'subscription'
+                    });
+
+                    toast.success('Premium subscription activated!', { id: toastId });
+                    setDbUserData(prev => ({ ...prev, isPremium: true }));
 
                 } catch (error) {
                     const errorMessage = error.response?.data?.message || 'Subscription failed.';
@@ -256,7 +255,7 @@ const CitizenProfile = () => {
                                     <p className="font-bold text-xl text-warning">Upgrade to Premium</p>
                                     <p className="text-sm">Pay 1000tk for unlimited reporting access.</p>
                                 </div>
-                                <button 
+                                <button
                                     className="btn btn-warning text-white"
                                     onClick={handleSubscribe}
                                     disabled={dbUserData.isBlocked}
@@ -265,10 +264,84 @@ const CitizenProfile = () => {
                                 </button>
                             </div>
                         )}
-                        
+
                     </div>
+
+                    <div className="divider">Payment History</div>
+
+                    {/* Payment History Section */}
+                    <PaymentHistory userEmail={user?.email} axiosSecure={axiosSecure} />
                 </div>
             </div>
+        </div>
+    );
+};
+
+// Payment History Component
+const PaymentHistory = ({ userEmail, axiosSecure }) => {
+    const { data, isLoading } = useQuery({
+        queryKey: ['userPayments', userEmail],
+        queryFn: async () => {
+            const response = await axiosSecure.get(`/payments/user/${userEmail}`);
+            return response.data;
+        },
+        enabled: !!userEmail
+    });
+
+    const payments = data?.payments || [];
+
+    if (isLoading) {
+        return (
+            <div className="text-center py-4">
+                <span className="loading loading-spinner loading-md"></span>
+            </div>
+        );
+    }
+
+    if (payments.length === 0) {
+        return (
+            <div className="text-center py-4 text-base-content/50">
+                <FaHistory className="mx-auto text-4xl mb-2 opacity-50" />
+                <p>No payment history yet</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-3">
+            {payments.map((payment) => (
+                <div key={payment._id} className="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                        <div className={`badge ${payment.type === 'subscription' ? 'badge-success' : 'badge-warning'}`}>
+                            {payment.type === 'subscription' ? 'Premium' : 'Boost'}
+                        </div>
+                        <div>
+                            <p className="font-medium">{payment.amount} Tk</p>
+                            <p className="text-xs text-base-content/60">
+                                {new Date(payment.createdAt).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                })}
+                            </p>
+                        </div>
+                    </div>
+                    <InvoiceDownloadButton
+                        invoice={{
+                            transactionId: payment.transactionId,
+                            date: payment.createdAt,
+                            userName: payment.userName,
+                            userEmail: payment.userEmail,
+                            type: payment.type,
+                            description: payment.type === 'boost'
+                                ? `Priority Boost for Issue: ${payment.issueTitle || 'N/A'}`
+                                : 'Premium Subscription',
+                            amount: payment.amount
+                        }}
+                        className="btn btn-sm btn-outline btn-primary"
+                    />
+                </div>
+            ))}
         </div>
     );
 };

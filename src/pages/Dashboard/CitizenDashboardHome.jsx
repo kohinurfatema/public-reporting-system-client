@@ -119,7 +119,7 @@ const CitizenDashboardHome = () => {
                 
                 {stats.totalSubmitted > 0 ? (
                     <div style={{ width: '100%', height: 400 }}>
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <PieChart>
                                 <Pie
                                     data={chartData}

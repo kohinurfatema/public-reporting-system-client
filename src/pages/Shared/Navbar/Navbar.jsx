@@ -1,20 +1,13 @@
 // src/pages/Shared/Navbar/Navbar.jsx
 
 import React from 'react';
-// 💡 IMPORTANT: Ensure NavLink and Link are imported from 'react-router-dom' 
-// if you are using createBrowserRouter, as shown in the updated code below.
 import { NavLink, Link } from 'react-router';
 import useAuth from '../../../hooks/useAuth';
+import useUserRole from '../../../hooks/useUserRole';
 
 const Navbar = () => {
-    // 💡 EXTRACTING USER AND LOGOUT FROM useAuth() HOOK
     const { user, logOut, loading } = useAuth();
-
-    // --- TEMPORARY ROLE LOGIC ---
-    // Since Firebase user object doesn't include the MongoDB role,
-    // we assume 'citizen' for now. UPDATE THIS when you fetch the real role.
-    const tempUserRole = 'citizen';
-    // --- END TEMPORARY LOGIC ---
+    const { role: userRole, isLoading: roleLoading } = useUserRole();
 
     const navItems = (
         <>
@@ -25,14 +18,10 @@ const Navbar = () => {
         </>
     );
 
-    const handleDashboardClick = () => {
-        // Determine the correct dashboard route based on the assumed/real role
-        let dashboardPath = '/dashboard';
-        if (tempUserRole === 'admin') dashboardPath = '/dashboard/admin';
-        else if (tempUserRole === 'staff') dashboardPath = '/dashboard/staff';
-        else if (tempUserRole === 'citizen') dashboardPath = '/dashboard/citizen';
-
-        return dashboardPath;
+    const getDashboardPath = () => {
+        if (userRole === 'admin') return '/dashboard/admin';
+        if (userRole === 'staff') return '/dashboard/staff';
+        return '/dashboard/citizen';
     };
 
     // Optional: Show a simple spinner while checking auth status
@@ -83,7 +72,7 @@ const Navbar = () => {
                                 <img
                                     alt="User Profile"
                                     // Use user.photoURL if available, otherwise fallback to a default image
-                                    src={user.photoURL || 'https://i.ibb.co/L8Gj18j/user-placeholder.jpg'}
+                                    src={user.photoURL || 'https://placehold.co/100x100/94a3b8/ffffff?text=User'}
                                 />
                             </div>
                         </div>
@@ -97,8 +86,9 @@ const Navbar = () => {
 
                             {/* Dashboard Link */}
                             <li>
-                                <Link to={handleDashboardClick()} className="justify-between">
+                                <Link to={getDashboardPath()} className="justify-between">
                                     Dashboard
+                                    {roleLoading && <span className="loading loading-spinner loading-xs"></span>}
                                 </Link>
                             </li>
 

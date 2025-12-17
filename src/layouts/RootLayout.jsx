@@ -13,7 +13,7 @@ const RootLayout = () => {
             <Navbar /> 
             
             {/* The content of the current route (Home, All Issues, etc.) renders here */}
-            <main className='flex-grow container mx-auto px-4'>
+            <main className='flex-grow'>
                 <Outlet />
             </main>
 

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import useAuth from '../hooks/useAuth';
 import { Link, useLocation, useNavigate } from 'react-router';
 import axios from 'axios';
 import useAxiosSecure from '../hooks/useAxiosSecure';
 import SocialLogin from './SocialLogin';
+import toast from 'react-hot-toast';
 
 const Register = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -12,60 +13,52 @@ const Register = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const axiosSecure = useAxiosSecure();
-
-    console.log('in register', location)
-
-
-    const handleRegistration = (data) => {
-
-        console.log('after register', data.photo[0]);
-        const profileImg = data.photo[0];
-
-        registerUser(data.email, data.password)
-            .then(result => {
-                console.log(result.user);
-
-                // 1. store the image in form data
-                const formData = new FormData();
-                formData.append('image', profileImg);
-
-                // 2. send the photo to store and get the ul
-                const image_API_URL = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host_key}`
-
-                axios.post(image_API_URL, formData)
-                    .then(res => {
-                        console.log('after image upload', res.data.data.url)
-
-                        // update user profile to firebase
-                        const userProfile = {
-                            displayName: data.name,
-                            photoURL: res.data.data.url
-                        }
-
-                        updateUserProfile(userProfile)
-                            .then(() => {
-                                console.log('user profile updated done.')
-                                // Save user to MongoDB
-                                axiosSecure.post('/users', {
-                                    email: data.email,
-                                    name: data.name,
-                                    photoURL: res.data.data.url
-                                })
-                                .then(() => {
-                                    console.log('user saved to MongoDB')
-                                    navigate(location.state || '/');
-                                })
-                                .catch(err => console.log('MongoDB save error:', err))
-                            })
-                            .catch(error => console.log(error))
-                    })
+    const [isLoading, setIsLoading] = useState(false);
 
 
+    const handleRegistration = async (data) => {
+        setIsLoading(true);
+        const toastId = toast.loading('Creating your account...');
 
-            })
-            .catch(error => {
-                console.log(error)
-            })
+        try {
+            const profileImg = data.photo[0];
+
+            // 1. Register user in Firebase
+            const result = await registerUser(data.email, data.password);
+
+            // 2. Upload image to ImgBB
+            const formData = new FormData();
+            formData.append('image', profileImg);
+            const image_API_URL = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host_key}`;
+            const imgRes = await axios.post(image_API_URL, formData);
+            const photoURL = imgRes.data.data.url;
+
+            // 3. Update Firebase profile
+            await updateUserProfile({
+                displayName: data.name,
+                photoURL: photoURL
+            });
+
+            // 4. Save user to MongoDB
+            await axiosSecure.post('/users', {
+                email: data.email,
+                name: data.name,
+                photoURL: photoURL
+            });
+
+            toast.success('Registration successful! Welcome aboard.', { id: toastId });
+            navigate(location.state || '/');
+        } catch (error) {
+            let errorMessage = 'Registration failed. Please try again.';
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage = 'Email already in use. Please try a different email.';
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage = 'Password is too weak. Please use a stronger password.';
+            }
+            toast.error(errorMessage, { id: toastId });
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -111,7 +104,9 @@ const Register = () => {
                     }
 
                     <div><a className="link link-hover">Forgot password?</a></div>
-                    <button className="btn btn-neutral mt-4">Register</button>
+                    <button className="btn btn-neutral mt-4" disabled={isLoading}>
+                        {isLoading ? <span className="loading loading-spinner loading-sm"></span> : 'Register'}
+                    </button>
                 </fieldset>
                 <p>Already have an account <Link
                     state={location.state}

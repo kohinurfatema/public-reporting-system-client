@@ -3,6 +3,7 @@
 import React from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 import useAuth from '../../hooks/useAuth';
+import { FaTachometerAlt, FaPlusCircle, FaClipboardList, FaUserCircle, FaHome } from 'react-icons/fa';
 
 const CitizenDashboard = () => {
     const { user } = useAuth();
@@ -13,26 +14,26 @@ const CitizenDashboard = () => {
         <>
             <li>
                 <NavLink to="/dashboard/citizen" end>
-                    Citizen Home
+                    <FaTachometerAlt /> Dashboard Home
                 </NavLink>
             </li>
             <li>
                 <NavLink to="/dashboard/citizen/report-issue">
-                    Report New Issue
+                    <FaPlusCircle /> Report New Issue
                 </NavLink>
             </li>
             <li>
                 <NavLink to="/dashboard/citizen/my-issues">
-                    My Reported Issues
+                    <FaClipboardList /> My Reported Issues
                 </NavLink>
             </li>
             <li>
                 <NavLink to="/dashboard/citizen/profile">
-                    Profile & Subscription
+                    <FaUserCircle /> Profile & Subscription
                 </NavLink>
             </li>
             <div className="divider">General</div>
-            <li><NavLink to="/">Home Page</NavLink></li>
+            <li><NavLink to="/"><FaHome /> Home Page</NavLink></li>
         </>
     );
 
