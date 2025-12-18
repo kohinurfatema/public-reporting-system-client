@@ -137,7 +137,8 @@ const AdminManageStaff = () => {
             email: data.email,
             phone: data.phone || null,
             department: data.department || 'General',
-            photoURL
+            photoURL,
+            ...(data.password && { password: data.password }) // Include password only when creating
         };
 
         if (editingStaff) {
@@ -254,6 +255,32 @@ const AdminManageStaff = () => {
                                     <span className="text-error text-sm">{errors.email.message}</span>
                                 )}
                             </div>
+
+                            {!editingStaff && (
+                                <div className="form-control">
+                                    <label className="label">
+                                        <span className="label-text">Password *</span>
+                                    </label>
+                                    <input
+                                        type="password"
+                                        {...register('password', {
+                                            required: !editingStaff ? 'Password is required' : false,
+                                            minLength: {
+                                                value: 6,
+                                                message: 'Password must be at least 6 characters'
+                                            }
+                                        })}
+                                        className="input input-bordered"
+                                        placeholder="Enter password (min 6 characters)"
+                                    />
+                                    {errors.password && (
+                                        <span className="text-error text-sm">{errors.password.message}</span>
+                                    )}
+                                    <span className="text-xs text-gray-500 mt-1">
+                                        ⚠️ Admin will create Firebase Auth account with this password
+                                    </span>
+                                </div>
+                            )}
 
                             <div className="form-control">
                                 <label className="label">
