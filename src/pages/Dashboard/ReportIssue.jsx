@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast'; 
+import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router';
-import useAuth from '../../hooks/useAuth' 
+import axios from 'axios';
+import useAuth from '../../hooks/useAuth'
 import useAxiosSecure from '../../hooks/useAxiosSecure';  // Make sure this hook exists
                                            
 
@@ -71,13 +72,23 @@ const ReportIssue = () => {
         fetchUserStatus();
     }, [user, axiosSecure]); 
 
-    // 💡 Placeholder for Image Upload
+    // 💡 Real Image Upload using ImgBB
     const uploadImage = async (imageFile) => {
-        // NOTE: Implement your actual ImgBB/Cloudinary upload logic here.
         if (!imageFile) return null;
-        console.log("Mocking image upload for:", imageFile.name);
-        await new Promise(resolve => setTimeout(resolve, 1500)); 
-        return `https://mock-image-url.com/${imageFile.name.substring(0, 10)}`;
+
+        try {
+            const formData = new FormData();
+            formData.append('image', imageFile);
+            const imgRes = await axios.post(
+                `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host_key}`,
+                formData
+            );
+            return imgRes.data.data.url;
+        } catch (error) {
+            console.error('Image upload error:', error);
+            toast.error('Failed to upload image');
+            return null;
+        }
     };
 
 

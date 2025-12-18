@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import { FaMapMarkerAlt, FaCalendarAlt, FaTag, FaInfoCircle, FaClock, FaUserTie, FaUserCog, FaTruckLoading, FaEdit, FaTrashAlt, FaChevronUp } from 'react-icons/fa';
 import useAuth from '../../hooks/useAuth';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
-// Import a modal component for editing (Placeholder for now)
-// import EditIssueModal from './EditIssueModal'; 
+import useAxiosSecure from '../../hooks/useAxiosSecure'; 
 
 
 const ISSUE_BOOST_PRICE = 100; // Define the boost price
@@ -21,7 +20,9 @@ const IssueDetails = () => {
     
     const [issue, setIssue] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    // const [isEditModalOpen, setIsEditModalOpen] = useState(false); // For editing
+
+    // Form handling for edit modal
+    const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
 
     const fetchIssueDetails = useCallback(async () => {
         if (!id || !user?.email) {
@@ -143,6 +144,44 @@ const IssueDetails = () => {
         }
     };
 
+    // --- Handle Edit Logic ---
+    const handleEditClick = () => {
+        // Pre-fill the form fields with existing data
+        setValue('title', issue.title);
+        setValue('description', issue.description);
+        setValue('category', issue.category);
+        setValue('location', issue.location);
+        // Open the modal
+        document.getElementById('edit_issue_modal').showModal();
+    };
+
+    const handleEditSubmit = async (data) => {
+        const toastId = toast.loading('Updating issue...');
+
+        try {
+            const updatedIssueData = {
+                title: data.title,
+                description: data.description,
+                category: data.category,
+                location: data.location,
+            };
+
+            const res = await axiosSecure.patch(`/issues/${issue._id}`, updatedIssueData);
+
+            toast.success('Issue updated successfully!', { id: toastId });
+
+            // Update the issue state with the new data
+            setIssue(res.data.issue);
+
+            document.getElementById('edit_issue_modal').close();
+            reset();
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Update failed.';
+            toast.error(errorMessage, { id: toastId });
+        }
+    };
+
 
     if (isLoading) {
         return <div className="text-center py-20"><span className="loading loading-spinner loading-lg"></span><p>Loading Issue #{id}...</p></div>;
@@ -170,9 +209,9 @@ const IssueDetails = () => {
             {/* --- ACTION BUTTONS --- */}
             <div className="flex gap-4 mb-8 p-4 bg-base-200 rounded-lg shadow-md">
                 {canEdit && (
-                    <button 
+                    <button
                         className="btn btn-warning"
-                        // onClick={() => setIsEditModalOpen(true)}
+                        onClick={handleEditClick}
                     >
                         <FaEdit /> Edit Issue
                     </button>
@@ -340,6 +379,68 @@ const IssueDetails = () => {
                     <p className="text-center text-gray-500">No activity history recorded.</p>
                 )}
             </div>
+
+            {/* --- Edit Issue Modal --- */}
+            <dialog id="edit_issue_modal" className="modal">
+                <div className="modal-box max-w-2xl">
+                    <h3 className="font-bold text-2xl text-warning mb-4">Edit Issue Details</h3>
+                    <form onSubmit={handleSubmit(handleEditSubmit)}>
+                        {/* Title */}
+                        <div className="form-control mb-4">
+                            <label className="label"><span className="label-text font-semibold">Title</span></label>
+                            <input
+                                type="text"
+                                {...register('title', { required: 'Title is required', maxLength: { value: 60, message: 'Max 60 characters' } })}
+                                className="input input-bordered w-full"
+                            />
+                            {errors.title && <span className="text-error text-sm mt-1">{errors.title.message}</span>}
+                        </div>
+
+                        {/* Description */}
+                        <div className="form-control mb-4">
+                            <label className="label"><span className="label-text font-semibold">Description</span></label>
+                            <textarea
+                                {...register('description', { required: 'Description is required' })}
+                                className="textarea textarea-bordered h-24"
+                            ></textarea>
+                            {errors.description && <span className="text-error text-sm mt-1">{errors.description.message}</span>}
+                        </div>
+
+                        {/* Category */}
+                        <div className="form-control mb-4">
+                            <label className="label"><span className="label-text font-semibold">Category</span></label>
+                            <select {...register('category', { required: 'Category is required' })} className="select select-bordered w-full">
+                                <option value="">Select a category</option>
+                                <option value="Pothole">Pothole</option>
+                                <option value="Streetlight">Streetlight</option>
+                                <option value="Water Leakage">Water Leakage</option>
+                                <option value="Garbage Overflow">Garbage Overflow</option>
+                                <option value="Damaged Footpath">Damaged Footpath</option>
+                                <option value="Other Infrastructure">Other Infrastructure</option>
+                            </select>
+                            {errors.category && <span className="text-error text-sm mt-1">{errors.category.message}</span>}
+                        </div>
+
+                        {/* Location */}
+                        <div className="form-control mb-4">
+                            <label className="label"><span className="label-text font-semibold">Location</span></label>
+                            <input
+                                type="text"
+                                {...register('location', { required: 'Location is required' })}
+                                className="input input-bordered w-full"
+                            />
+                            {errors.location && <span className="text-error text-sm mt-1">{errors.location.message}</span>}
+                        </div>
+
+                        {/* Modal Actions */}
+                        <div className="modal-action">
+                            <button type="submit" className="btn btn-warning">Update Issue</button>
+                            <button type="button" className="btn" onClick={() => { document.getElementById('edit_issue_modal').close(); reset(); }}>Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
+            {/* --- End Edit Issue Modal --- */}
         </div>
     );
 };
