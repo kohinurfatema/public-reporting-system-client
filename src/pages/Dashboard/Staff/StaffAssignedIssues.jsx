@@ -68,7 +68,7 @@ const StaffAssignedIssues = () => {
             'In-Progress': 'badge-info',
             'Working': 'badge-primary',
             'Resolved': 'badge-success',
-            'Closed': 'badge-ghost',
+            'Closed': 'badge-neutral',
             'Rejected': 'badge-error'
         };
         return badges[status] || 'badge-ghost';

@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
+import { FaEdit, FaMapMarkerAlt, FaList, FaExclamationCircle } from 'react-icons/fa';
+import { MdTitle, MdDescription } from 'react-icons/md';
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 
@@ -163,7 +165,7 @@ const MyIssues = () => {
             case 'Resolved':
                 return 'badge-success';
             case 'Closed':
-                return 'badge-accent';
+                return 'badge-neutral';
             case 'Rejected':
                 return 'badge-error';
             default:
@@ -298,69 +300,161 @@ const MyIssues = () => {
 
 
             {/* --- Edit Issue Modal --- */}
-            {/* The modal is defined outside the table loop */}
             <dialog id="edit_issue_modal" className="modal">
-                <div className="modal-box w-11/12 max-w-2xl">
-                    <h3 className="font-bold text-2xl text-warning mb-4">Edit Issue Details</h3>
-                    <form onSubmit={handleSubmit(handleEditSubmit)}>
-                        
+                <div className="modal-box w-11/12 max-w-3xl bg-base-100 shadow-2xl">
+                    {/* Modal Header */}
+                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-base-300">
+                        <div className="p-3 bg-warning/20 rounded-full">
+                            <FaEdit className="text-2xl text-warning" />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-2xl text-warning">Edit Issue Details</h3>
+                            <p className="text-sm text-base-content/60">Update your issue information below</p>
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSubmit(handleEditSubmit)} className="space-y-5">
+
                         {/* Title */}
                         <div className="form-control">
-                            <label className="label"><span className="label-text">Issue Title</span></label>
+                            <label className="label">
+                                <span className="label-text font-semibold flex items-center gap-2">
+                                    <MdTitle className="text-primary text-xl" />
+                                    Issue Title
+                                    <span className="badge badge-error badge-xs">Required</span>
+                                </span>
+                            </label>
                             <input
                                 type="text"
-                                className="input input-bordered"
+                                className={`input input-bordered w-full ${errors.title ? 'input-error' : 'focus:input-primary'}`}
+                                placeholder="Enter issue title"
                                 {...register('title', { required: 'Title is required' })}
                             />
-                            {errors.title && <p className="text-error mt-1">{errors.title.message}</p>}
+                            {errors.title && (
+                                <label className="label">
+                                    <span className="label-text-alt text-error flex items-center gap-1">
+                                        <FaExclamationCircle />
+                                        {errors.title.message}
+                                    </span>
+                                </label>
+                            )}
                         </div>
 
                         {/* Description */}
                         <div className="form-control">
-                            <label className="label"><span className="label-text">Detailed Description</span></label>
+                            <label className="label">
+                                <span className="label-text font-semibold flex items-center gap-2">
+                                    <MdDescription className="text-primary text-xl" />
+                                    Detailed Description
+                                    <span className="badge badge-error badge-xs">Required</span>
+                                </span>
+                            </label>
                             <textarea
-                                className="textarea textarea-bordered h-24"
+                                className={`textarea textarea-bordered h-28 w-full ${errors.description ? 'textarea-error' : 'focus:textarea-primary'}`}
+                                placeholder="Describe the issue in detail..."
                                 {...register('description', { required: 'Description is required' })}
                             />
-                            {errors.description && <p className="text-error mt-1">{errors.description.message}</p>}
+                            {errors.description && (
+                                <label className="label">
+                                    <span className="label-text-alt text-error flex items-center gap-1">
+                                        <FaExclamationCircle />
+                                        {errors.description.message}
+                                    </span>
+                                </label>
+                            )}
                         </div>
 
-                        {/* Category */}
-                        <div className="form-control">
-                            <label className="label"><span className="label-text">Category</span></label>
-                            <select
-                                className="select select-bordered"
-                                {...register('category', { required: 'Category is required' })}
+                        {/* Category & Location Side by Side */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {/* Category */}
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text font-semibold flex items-center gap-2">
+                                        <FaList className="text-primary" />
+                                        Category
+                                        <span className="badge badge-error badge-xs">Required</span>
+                                    </span>
+                                </label>
+                                <select
+                                    className={`select select-bordered w-full ${errors.category ? 'select-error' : 'focus:select-primary'}`}
+                                    {...register('category', { required: 'Category is required' })}
+                                >
+                                    {categories.map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
+                                {errors.category && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error flex items-center gap-1">
+                                            <FaExclamationCircle />
+                                            {errors.category.message}
+                                        </span>
+                                    </label>
+                                )}
+                            </div>
+
+                            {/* Location */}
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text font-semibold flex items-center gap-2">
+                                        <FaMapMarkerAlt className="text-primary" />
+                                        Location / Address
+                                        <span className="badge badge-error badge-xs">Required</span>
+                                    </span>
+                                </label>
+                                <input
+                                    type="text"
+                                    className={`input input-bordered w-full ${errors.location ? 'input-error' : 'focus:input-primary'}`}
+                                    placeholder="Enter exact location"
+                                    {...register('location', { required: 'Location is required' })}
+                                />
+                                {errors.location && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error flex items-center gap-1">
+                                            <FaExclamationCircle />
+                                            {errors.location.message}
+                                        </span>
+                                    </label>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="divider"></div>
+
+                        {/* Action Buttons */}
+                        <div className="modal-action mt-6">
+                            <button
+                                type="button"
+                                className="btn btn-ghost gap-2"
+                                onClick={() => {
+                                    document.getElementById('edit_issue_modal').close();
+                                    setSelectedIssue(null);
+                                    reset();
+                                }}
                             >
-                                {categories.map(cat => (
-                                    <option key={cat} value={cat}>{cat}</option>
-                                ))}
-                            </select>
-                            {errors.category && <p className="text-error mt-1">{errors.category.message}</p>}
-                        </div>
-
-                        {/* Location */}
-                        <div className="form-control">
-                            <label className="label"><span className="label-text">Location / Address</span></label>
-                            <input
-                                type="text"
-                                className="input input-bordered"
-                                {...register('location', { required: 'Location is required' })}
-                            />
-                            {errors.location && <p className="text-error mt-1">{errors.location.message}</p>}
-                        </div>
-
-                        <div className="modal-action">
-                            <button type="submit" className="btn btn-warning">Save Changes</button>
-                            {/* Close button inside the form to close the modal */}
-                            <button type="button" className="btn" onClick={() => document.getElementById('edit_issue_modal').close()}>Cancel</button>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn btn-warning gap-2"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Save Changes
+                            </button>
                         </div>
                     </form>
                 </div>
-                {/* Close button outside the form for background click */}
-                <form method="dialog" className="modal-backdrop">
+
+                {/* Backdrop */}
+                <form method="dialog" className="modal-backdrop bg-black/50">
                     <button onClick={() => {
-                        setSelectedIssue(null); 
+                        setSelectedIssue(null);
                         reset();
                     }}>close</button>
                 </form>

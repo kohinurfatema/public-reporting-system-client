@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
-import { FaSearch, FaUserPlus, FaTimes, FaEye } from 'react-icons/fa';
+import { FaSearch, FaUserPlus, FaTimes, FaEye, FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import useAuth from '../../../hooks/useAuth';
@@ -88,6 +88,21 @@ const AdminAllIssues = () => {
         }
     });
 
+    // Delete issue mutation
+    const deleteMutation = useMutation({
+        mutationFn: async (issueId) => {
+            const res = await axiosSecure.delete(`/issues/${issueId}`);
+            return res.data;
+        },
+        onSuccess: () => {
+            toast.success('Issue deleted successfully');
+            queryClient.invalidateQueries({ queryKey: ['adminIssues'] });
+        },
+        onError: (error) => {
+            toast.error(error.response?.data?.message || 'Failed to delete issue');
+        }
+    });
+
     const handleAssign = (staffEmail) => {
         const staff = staffList.find(s => s.email === staffEmail);
         assignMutation.mutate({
@@ -113,6 +128,23 @@ const AdminAllIssues = () => {
                     issueId: issue._id,
                     reason: result.value || 'Rejected by admin'
                 });
+            }
+        });
+    };
+
+    const handleDelete = (issue) => {
+        Swal.fire({
+            title: 'Delete Issue',
+            text: `Are you sure you want to permanently delete "${issue.title}"? This action cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteMutation.mutate(issue._id);
             }
         });
     };
@@ -271,6 +303,16 @@ const AdminAllIssues = () => {
                                                         title="Assign Staff"
                                                     >
                                                         <FaUserPlus />
+                                                    </button>
+                                                )}
+
+                                                {issue.status === 'Rejected' && (
+                                                    <button
+                                                        onClick={() => handleDelete(issue)}
+                                                        className="btn btn-error btn-xs"
+                                                        title="Delete Issue"
+                                                    >
+                                                        <FaTrash />
                                                     </button>
                                                 )}
                                             </div>

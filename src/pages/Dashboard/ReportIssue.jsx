@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router';
 import axios from 'axios';
+import { FaMapMarkerAlt, FaImage, FaExclamationCircle, FaList } from 'react-icons/fa';
+import { MdTitle, MdDescription } from 'react-icons/md';
 import useAuth from '../../hooks/useAuth'
 import useAxiosSecure from '../../hooks/useAxiosSecure';  // Make sure this hook exists
                                            
@@ -155,115 +157,234 @@ const ReportIssue = () => {
     }
 
     return (
-        <div className="p-4 md:p-8">
-            <h2 className="text-3xl font-bold text-center text-primary mb-8">
-                Report a New Infrastructure Issue
-            </h2>
+        <div className="min-h-screen bg-gradient-to-br from-base-200 to-base-300 p-4 md:p-8">
+            <div className="max-w-4xl mx-auto">
+                {/* Header Section */}
+                <div className="text-center mb-8">
+                    <div className="inline-block p-3 bg-primary rounded-full mb-4">
+                        <FaExclamationCircle className="text-4xl text-white" />
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-2">
+                        Report a New Infrastructure Issue
+                    </h2>
+                    <p className="text-base-content/70 text-sm md:text-base">
+                        Help improve your community by reporting infrastructure problems
+                    </p>
+                </div>
 
-            {/* 💡 USER LIMIT WARNING AND BUTTON */}
-            {isLimitReached && (
-                <div role="alert" className="alert alert-warning mb-6 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856a2 2 0 001.789-3.327L13.789 5.071a2 2 0 00-3.578 0L3.341 16.673A2 2 0 005.13 20z" /></svg>
-                    <span>
-                        Free user limit reached! You have reported {issueLimit} out of {MAX_FREE_ISSUES} issues.
-                        Please subscribe to report unlimited issues.
-                    </span>
-                    {/* Link to Profile Page for subscription */}
-                    <Link to="/dashboard/citizen/profile" className="btn btn-sm btn-warning">
-                        Subscribe Now
+                {/* User Status Badge */}
+                {!isLimitReached && (
+                    <div className="alert alert-info shadow-lg mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <div className="font-bold">
+                                {isPremium ? 'Premium Account' : 'Free Account'}
+                            </div>
+                            <div className="text-xs">
+                                {isPremium
+                                    ? 'You can report unlimited issues'
+                                    : `${issueLimit} of ${MAX_FREE_ISSUES} issues reported`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* USER LIMIT WARNING */}
+                {isLimitReached && (
+                    <div role="alert" className="alert alert-warning mb-6 shadow-lg animate-pulse">
+                        <FaExclamationCircle className="text-2xl" />
+                        <div className="flex-1">
+                            <h3 className="font-bold">Free Limit Reached!</h3>
+                            <div className="text-xs">
+                                You have reported {issueLimit} out of {MAX_FREE_ISSUES} issues.
+                                Upgrade to Premium for unlimited reporting.
+                            </div>
+                        </div>
+                        <Link to="/dashboard/citizen/profile" className="btn btn-sm btn-warning gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Upgrade Now
+                        </Link>
+                    </div>
+                )}
+
+                {/* Form Card */}
+                <div className={`card bg-base-100 shadow-2xl ${isLimitReached ? 'opacity-60 pointer-events-none' : ''}`}>
+                    <div className="card-body p-6 md:p-8">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+
+                            {/* 1. Title */}
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text font-semibold flex items-center gap-2">
+                                        <MdTitle className="text-primary text-xl" />
+                                        Issue Title
+                                        <span className="badge badge-error badge-xs">Required</span>
+                                    </span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., Large Pothole on Main Street"
+                                    className={`input input-bordered w-full ${errors.title ? 'input-error' : 'focus:input-primary'}`}
+                                    maxLength={60}
+                                    {...register('title', { required: 'Title is required' })}
+                                />
+                                {errors.title && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error flex items-center gap-1">
+                                            <FaExclamationCircle />
+                                            {errors.title.message}
+                                        </span>
+                                    </label>
+                                )}
+                            </div>
+
+                            {/* 2. Description */}
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text font-semibold flex items-center gap-2">
+                                        <MdDescription className="text-primary text-xl" />
+                                        Detailed Description
+                                        <span className="badge badge-error badge-xs">Required</span>
+                                    </span>
+                                </label>
+                                <textarea
+                                    placeholder="Describe the issue in detail, including any landmarks or specific location details that will help identify the problem..."
+                                    className={`textarea textarea-bordered h-32 w-full ${errors.description ? 'textarea-error' : 'focus:textarea-primary'}`}
+                                    {...register('description', { required: 'Description is required' })}
+                                />
+                                {errors.description && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error flex items-center gap-1">
+                                            <FaExclamationCircle />
+                                            {errors.description.message}
+                                        </span>
+                                    </label>
+                                )}
+                            </div>
+
+                            {/* 3. Category & Location (Side-by-Side) */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                {/* Category Dropdown */}
+                                <div className="form-control">
+                                    <label className="label">
+                                        <span className="label-text font-semibold flex items-center gap-2">
+                                            <FaList className="text-primary" />
+                                            Category
+                                            <span className="badge badge-error badge-xs">Required</span>
+                                        </span>
+                                    </label>
+                                    <select
+                                        className={`select select-bordered w-full ${errors.category ? 'select-error' : 'focus:select-primary'}`}
+                                        defaultValue=""
+                                        {...register('category', { required: 'Category is required' })}
+                                    >
+                                        <option value="" disabled>Select Issue Category</option>
+                                        {categories.map(cat => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                    </select>
+                                    {errors.category && (
+                                        <label className="label">
+                                            <span className="label-text-alt text-error flex items-center gap-1">
+                                                <FaExclamationCircle />
+                                                {errors.category.message}
+                                            </span>
+                                        </label>
+                                    )}
+                                </div>
+
+                                {/* Location */}
+                                <div className="form-control">
+                                    <label className="label">
+                                        <span className="label-text font-semibold flex items-center gap-2">
+                                            <FaMapMarkerAlt className="text-primary" />
+                                            Exact Location / Address
+                                            <span className="badge badge-error badge-xs">Required</span>
+                                        </span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g., Intersection of 1st and Elm St."
+                                        className={`input input-bordered w-full ${errors.location ? 'input-error' : 'focus:input-primary'}`}
+                                        {...register('location', { required: 'Location is required' })}
+                                    />
+                                    {errors.location && (
+                                        <label className="label">
+                                            <span className="label-text-alt text-error flex items-center gap-1">
+                                                <FaExclamationCircle />
+                                                {errors.location.message}
+                                            </span>
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* 4. Image Upload */}
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text font-semibold flex items-center gap-2">
+                                        <FaImage className="text-primary" />
+                                        Upload Image
+                                        <span className="badge badge-info badge-xs">Optional</span>
+                                    </span>
+                                    <span className="label-text-alt text-base-content/60">
+                                        Adding a photo helps staff assess the issue faster
+                                    </span>
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="file-input file-input-bordered file-input-primary w-full"
+                                    {...register('image')}
+                                />
+                            </div>
+
+                            {/* Divider */}
+                            <div className="divider"></div>
+
+                            {/* 5. Submit Button */}
+                            <div className="form-control">
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary btn-lg w-full gap-2"
+                                    disabled={isLimitReached || isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <span className="loading loading-spinner"></span>
+                                            Submitting Report...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                            </svg>
+                                            Submit Report
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* Helper Text */}
+                            <p className="text-center text-sm text-base-content/60">
+                                Your report will be reviewed by our team within 24-48 hours
+                            </p>
+                        </form>
+                    </div>
+                </div>
+
+                {/* Additional Info */}
+                <div className="mt-8 text-center">
+                    <Link to="/dashboard/citizen/my-issues" className="link link-primary">
+                        View My Reported Issues
                     </Link>
                 </div>
-            )}
-            {/* END USER LIMIT WARNING */}
-
-            <div className={`card w-full max-w-3xl mx-auto shadow-2xl bg-base-100 p-6 ${isLimitReached ? 'opacity-50 pointer-events-none' : ''}`}>
-                <form onSubmit={handleSubmit(onSubmit)} className="card-body p-0">
-                    
-                    {/* 1. Title */}
-                    <div className="form-control">
-                        <label className="label"><span className="label-text font-semibold">Issue Title</span></label>
-                        <input
-                            type="text"
-                            placeholder="e.g., Large Pothole on Main Street"
-                            className="input input-bordered"
-                            maxLength={60}
-                            {...register('title', { required: 'Title is required' })}
-                        />
-                        {errors.title && <p className="text-error mt-1">{errors.title.message}</p>}
-                    </div>
-
-                    {/* 2. Description */}
-                    <div className="form-control">
-                        <label className="label"><span className="label-text font-semibold">Detailed Description</span></label>
-                        <textarea
-                            placeholder="Describe the issue, including landmarks or specific location details."
-                            className="textarea textarea-bordered h-24"
-                            {...register('description', { required: 'Description is required' })}
-                        />
-                        {errors.description && <p className="text-error mt-1">{errors.description.message}</p>}
-                    </div>
-
-                    {/* 3. Category & Location (Side-by-Side) */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        
-                        {/* Category Dropdown */}
-                        <div className="form-control">
-                            <label className="label"><span className="label-text font-semibold">Category</span></label>
-                            <select
-                                className="select select-bordered"
-                                defaultValue=""
-                                {...register('category', { required: 'Category is required' })}
-                            >
-                                <option value="" disabled>Select Issue Category</option>
-                                {categories.map(cat => (
-                                    <option key={cat} value={cat}>{cat}</option>
-                                ))}
-                            </select>
-                            {errors.category && <p className="text-error mt-1">{errors.category.message}</p>}
-                        </div>
-
-                        {/* Location */}
-                        <div className="form-control">
-                            <label className="label"><span className="label-text font-semibold">Exact Location / Address</span></label>
-                            <input
-                                type="text"
-                                placeholder="e.g., Intersection of 1st and Elm St."
-                                className="input input-bordered"
-                                {...register('location', { required: 'Location is required' })}
-                            />
-                            {errors.location && <p className="text-error mt-1">{errors.location.message}</p>}
-                        </div>
-                    </div>
-
-                    {/* 4. Image Upload */}
-                    <div className="form-control">
-                        <label className="label"><span className="label-text font-semibold">Upload Image (Optional but recommended)</span></label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="file-input file-input-bordered w-full"
-                            {...register('image')}
-                        />
-                    </div>
-
-                    {/* 5. Submit Button */}
-                    <div className="form-control mt-6">
-                        <button 
-                            type="submit" 
-                            className="btn btn-primary"
-                            disabled={isLimitReached || isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <>
-                                    <span className="loading loading-spinner"></span>
-                                    Submitting...
-                                </>
-                            ) : (
-                                "Submit Report"
-                            )}
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     );
