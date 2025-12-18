@@ -6,8 +6,8 @@ A comprehensive digital platform for citizens to report public infrastructure is
 
 ## 🔗 Live Links
 
-- **Live Site:** [https://your-live-site-url.web.app](https://your-live-site-url.web.app)
-- **Server API:** [https://your-server-url.vercel.app](https://your-server-url.vercel.app)
+- **Live Site:** [https://public-reporting-system-351f1.web.app](https://public-reporting-system-351f1.web.app)
+- **Server API:** [https://public-reporting-system-server-kohinur-fatema.vercel.app](https://public-reporting-system-server-kohinur-fatema.vercel.app)
 - **Client Repository:** [GitHub Client](https://github.com/kohinurfatema/public-reporting-system-client)
 - **Server Repository:** [GitHub Server](https://github.com/kohinurfatema/public-reporting-system-server)
 
