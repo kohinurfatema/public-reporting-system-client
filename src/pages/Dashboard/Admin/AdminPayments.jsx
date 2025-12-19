@@ -131,8 +131,8 @@ const AdminPayments = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <span className={`badge ${getTypeBadge(payment.type)}`}>
-                                            {payment.type === 'boost' ? 'Priority Boost' : 'Premium Subscription'}
+                                        <span className={`badge badge-sm ${getTypeBadge(payment.type)}`}>
+                                            {payment.type === 'boost' ? 'Boost' : 'Premium'}
                                         </span>
                                     </td>
                                     <td className="font-semibold">{payment.amount} Tk</td>
