@@ -6,8 +6,8 @@ A comprehensive digital platform for citizens to report public infrastructure is
 
 ## 🔗 Live Links
 
-- **Live Site:** [https://your-live-site-url.web.app](https://your-live-site-url.web.app)
-- **Server API:** [https://your-server-url.vercel.app](https://your-server-url.vercel.app)
+- **Live Site:** [https://public-reporting-system-351f1.web.app](https://your-live-site-url.web.app)
+- **Server API:** [https://public-reporting-system-server-kappa.vercel.app](https://your-server-url.vercel.app)
 - **Client Repository:** [GitHub Client](https://github.com/kohinurfatema/public-reporting-system-client)
 - **Server Repository:** [GitHub Server](https://github.com/kohinurfatema/public-reporting-system-server)
 
@@ -16,7 +16,7 @@ A comprehensive digital platform for citizens to report public infrastructure is
 ## 🔐 Admin Credentials
 
 - **Email:** admin@publicreport.com
-- **Password:** admin123
+- **Password:** Admin123!@#
 
 ---
 
@@ -24,12 +24,12 @@ A comprehensive digital platform for citizens to report public infrastructure is
 
 ### Staff Account
 - **Email:** staff@publicreport.com
-- **Password:** staff123
+- **Password:** Staff123!@#
 - **Note:** This staff member has assigned issues and active tasks
 
 ### Citizen Account
 - **Email:** citizen@publicreport.com
-- **Password:** citizen123
+- **Password:** Citizen123!@#
 - **Note:** Free user with 2 issues already reported (1 remaining before subscription required)
 
 ---
