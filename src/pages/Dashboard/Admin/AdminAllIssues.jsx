@@ -264,7 +264,7 @@ const AdminAllIssues = () => {
                                         <td>
                                             <div className="flex gap-1">
                                                 <Link
-                                                    to={`/dashboard/citizen/issue-details/${issue._id}`}
+                                                    to={`/dashboard/admin/issue-details/${issue._id}`}
                                                     className="btn btn-ghost btn-xs"
                                                     title="View Details"
                                                 >
