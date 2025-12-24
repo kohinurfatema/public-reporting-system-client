@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
-import { FaEdit, FaMapMarkerAlt, FaList, FaExclamationCircle } from 'react-icons/fa';
+import { FaEdit, FaMapMarkerAlt, FaList, FaExclamationCircle, FaRocket } from 'react-icons/fa';
 import { MdTitle, MdDescription } from 'react-icons/md';
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
@@ -235,37 +235,64 @@ const MyIssues = () => {
                     </Link>
                 </div>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="table table-xs md:table-sm w-full table-zebra shadow-xl">
+                <div className="overflow-x-auto bg-base-100 rounded-lg shadow-lg">
+                    <table className="table table-sm w-full">
                         {/* head */}
                         <thead>
-                            <tr className='bg-primary text-white text-xs'>
-                                <th>#</th>
+                            <tr className='bg-primary text-white'>
+                                <th className="text-center">#</th>
                                 <th>Title</th>
                                 <th>Category</th>
                                 <th>Status</th>
+                                <th>Priority</th>
                                 <th>Reported On</th>
-                                <th>Actions</th>
+                                <th className="text-center">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="text-xs md:text-sm">
+                        <tbody>
                             {issues.map((issue, index) => (
-                                <tr key={issue._id}>
-                                    <th>{index + 1}</th>
-                                    <td className="max-w-[120px] truncate">{issue.title}</td>
-                                    <td>{issue.category}</td>
-                                    <td>
-                                        <div className={`badge badge-sm ${getStatusBadge(issue.status)} text-white`}>
-                                            {issue.status}
+                                <tr key={issue._id} className="hover:bg-base-200 transition-colors">
+                                    <th className="text-center font-bold">{index + 1}</th>
+                                    <td className="font-semibold text-base-content">
+                                        <div className="max-w-[200px] truncate" title={issue.title}>
+                                            {issue.title}
                                         </div>
                                     </td>
-                                    <td className="whitespace-nowrap">{new Date(issue.createdAt).toLocaleDateString()}</td>
                                     <td>
-                                        <div className="flex gap-1">
+                                        <span className="badge badge-outline badge-sm">
+                                            {issue.category}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span className={`badge badge-sm ${getStatusBadge(issue.status)} text-white`}>
+                                            {issue.status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {issue.priority === 'High' ? (
+                                            <span className="badge badge-sm badge-warning gap-1 font-semibold">
+                                                <FaRocket className="text-xs" />
+                                                Boosted
+                                            </span>
+                                        ) : (
+                                            <span className="badge badge-sm badge-ghost">
+                                                Normal
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="whitespace-nowrap text-base-content">
+                                        {new Date(issue.createdAt).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })}
+                                    </td>
+                                    <td>
+                                        <div className="flex gap-1 justify-center">
                                             {/* View Details Button */}
                                             <Link
                                                 to={`/dashboard/citizen/issue-details/${issue._id}`}
-                                                className="btn btn-xs btn-outline btn-primary"
+                                                className="btn btn-xs btn-outline btn-info"
                                             >
                                                 View
                                             </Link>
@@ -273,7 +300,7 @@ const MyIssues = () => {
                                             {/* Edit Button (Only if Pending) */}
                                             {issue.status === 'Pending' && (
                                                 <button
-                                                    className="btn btn-xs btn-warning"
+                                                    className="btn btn-xs btn-warning text-white"
                                                     onClick={() => handleEditClick(issue)}
                                                 >
                                                     Edit
@@ -283,7 +310,7 @@ const MyIssues = () => {
                                             {/* Delete Button (Only if Pending) */}
                                             {issue.status === 'Pending' && (
                                                 <button
-                                                    className="btn btn-xs btn-error"
+                                                    className="btn btn-xs btn-error text-white"
                                                     onClick={() => handleDeleteIssue(issue._id, issue.title)}
                                                 >
                                                     Delete

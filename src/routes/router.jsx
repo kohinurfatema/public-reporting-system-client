@@ -165,6 +165,10 @@ export const router = createBrowserRouter([
                 path: "profile",
                 element: <AdminProfile />,
               },
+              {
+                path: 'issue-details/:id',
+                element: <IssueDetails />,
+              },
             ],
           },
           // STAFF DASHBOARD (PARENT ROUTE)
@@ -188,6 +192,10 @@ export const router = createBrowserRouter([
               {
                 path: "profile",
                 element: <StaffProfile />,
+              },
+              {
+                path: 'issue-details/:id',
+                element: <IssueDetails />,
               },
             ],
           },
