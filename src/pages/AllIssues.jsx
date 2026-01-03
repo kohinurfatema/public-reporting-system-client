@@ -267,7 +267,7 @@ const AllIssues = () => {
 
             {/* Issues Grid */}
             {!isLoading && !error && issues.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {issues.map((issue) => (
                         <div
                             key={issue._id}
@@ -331,8 +331,7 @@ const AllIssues = () => {
 
                                     {/* View Details */}
                                     <Link
-                                        to={user ? `/dashboard/citizen/issue-details/${issue._id}` : '/login'}
-                                        state={!user ? `/dashboard/citizen/issue-details/${issue._id}` : undefined}
+                                        to={`/issue/${issue._id}`}
                                         className="btn btn-sm btn-primary"
                                     >
                                         <FaEye /> Details

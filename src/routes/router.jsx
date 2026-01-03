@@ -4,6 +4,7 @@ import { createBrowserRouter } from "react-router"; // Use 'react-router-dom' no
 import RootLayout from "../layouts/RootLayout";
 import Home from "../pages/Home";
 import AllIssues from "../pages/AllIssues"; // Assuming this page exists
+import IssueDetailsPublic from "../pages/IssueDetailsPublic"; // Public issue details page
 import Login from "../pages/Login"; // Assuming this page exists
 import Register from "../pages/Register"; // Assuming this page exists
 import NotFound from "../pages/NotFound"; // Need a 404 page
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
       {
         path: "all-issues",
         element: <AllIssues />, // Page to display all issues
+      },
+      {
+        path: "issue/:id",
+        element: <IssueDetailsPublic />, // Public issue details page
       },
       // ✅ Meaningful Public Routes for Extra Pages
       {

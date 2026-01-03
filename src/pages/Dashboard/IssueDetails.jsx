@@ -1,11 +1,12 @@
 // src/pages/Dashboard/Citizen/IssueDetails.jsx (UPDATED)
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, Link } from 'react-router';
 import { useForm } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
-import { FaMapMarkerAlt, FaCalendarAlt, FaTag, FaInfoCircle, FaClock, FaUserTie, FaUserCog, FaTruckLoading, FaEdit, FaTrashAlt, FaChevronUp } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaCalendarAlt, FaTag, FaInfoCircle, FaClock, FaUserTie, FaUserCog, FaTruckLoading, FaEdit, FaTrashAlt, FaChevronUp, FaEye, FaLink } from 'react-icons/fa';
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure'; 
 
@@ -45,6 +46,21 @@ const IssueDetails = () => {
     useEffect(() => {
         fetchIssueDetails();
     }, [fetchIssueDetails]);
+
+    // Fetch related issues based on category
+    const { data: relatedIssuesData } = useQuery({
+        queryKey: ['relatedIssues', issue?.category, issue?._id],
+        queryFn: async () => {
+            if (!issue?.category || !issue?._id) return { issues: [] };
+            const res = await axiosSecure.get(`/issues?category=${issue.category}&limit=4`);
+            // Filter out the current issue
+            const filtered = res.data.issues.filter(i => i._id !== issue._id);
+            return { issues: filtered.slice(0, 4) }; // Max 4 related issues
+        },
+        enabled: !!issue?.category && !!issue?._id
+    });
+
+    const relatedIssues = relatedIssuesData?.issues || [];
 
     // --- Helper functions (same as before) ---
     const formatDateTime = (dateString) => {
@@ -379,6 +395,84 @@ const IssueDetails = () => {
                     <p className="text-center text-gray-500">No activity history recorded.</p>
                 )}
             </div>
+
+            {/* --- Related Issues Section --- */}
+            {relatedIssues.length > 0 && (
+                <div className="mt-8 card bg-base-100 shadow-xl p-6">
+                    <h3 className="text-xl font-bold border-b pb-2 mb-6 flex items-center gap-2">
+                        <FaLink /> Related Issues in {issue.category}
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {relatedIssues.map((relatedIssue) => (
+                            <div
+                                key={relatedIssue._id}
+                                className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow border ${
+                                    relatedIssue.priority === 'High' ? 'border-error border-2' : 'border-base-200'
+                                }`}
+                            >
+                                {/* Priority Banner */}
+                                {relatedIssue.priority === 'High' && (
+                                    <div className="bg-error text-error-content text-center py-1 text-sm font-bold">
+                                        HIGH PRIORITY
+                                    </div>
+                                )}
+
+                                {/* Image */}
+                                <figure className="h-32 bg-gray-200">
+                                    {relatedIssue.imageUrl ? (
+                                        <img
+                                            src={relatedIssue.imageUrl}
+                                            alt={relatedIssue.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20">
+                                            <span className="text-3xl opacity-30">📷</span>
+                                        </div>
+                                    )}
+                                </figure>
+
+                                <div className="card-body p-4">
+                                    {/* Badges */}
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        <span className={`badge ${getStatusColor(relatedIssue.status)} text-white`}>
+                                            {relatedIssue.status}
+                                        </span>
+                                        <span className="badge badge-outline">{relatedIssue.category}</span>
+                                    </div>
+
+                                    {/* Title */}
+                                    <h3 className="card-title text-sm line-clamp-2">{relatedIssue.title}</h3>
+
+                                    {/* Location */}
+                                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-2">
+                                        <FaMapMarkerAlt className="text-error flex-shrink-0" />
+                                        <span className="line-clamp-1">{relatedIssue.location}</span>
+                                    </p>
+
+                                    {/* Footer */}
+                                    <div className="card-actions justify-between items-center mt-3 pt-3 border-t">
+                                        {/* Upvote Count */}
+                                        <div className="flex items-center gap-1 text-sm">
+                                            <FaChevronUp className="text-primary" />
+                                            <span>{relatedIssue.upvotes?.length || 0}</span>
+                                        </div>
+
+                                        {/* View Details */}
+                                        <Link
+                                            to={`/dashboard/citizen/issue-details/${relatedIssue._id}`}
+                                            className="btn btn-xs btn-primary"
+                                        >
+                                            <FaEye /> Details
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* --- Edit Issue Modal --- */}
             <dialog id="edit_issue_modal" className="modal">
