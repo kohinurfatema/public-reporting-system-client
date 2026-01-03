@@ -1,2 +1,55 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
+
+@theme {
+  --color-brand-primary: #0891b2;
+  --color-brand-secondary: #10b981;
+  --color-brand-accent: #f59e0b;
+  --spacing-section: 5rem;
+  --spacing-card: 1.5rem;
+  --radius-card: 1rem;
+  --radius-button: 0.5rem;
+  --radius-input: 0.5rem;
+}
+
+[data-theme="light"] {
+  --p: 187 91% 37%;
+  --s: 160 84% 39%;
+  --a: 38 92% 50%;
+  --n: 217 19% 27%;
+  --b1: 0 0% 100%;
+  --b2: 210 40% 98%;
+  --b3: 210 40% 96%;
+}
+
+[data-theme="dark"] {
+  --p: 187 91% 45%;
+  --s: 160 84% 45%;
+  --a: 38 92% 55%;
+  --n: 217 33% 17%;
+  --b1: 220 18% 13%;
+  --b2: 220 18% 10%;
+  --b3: 220 18% 8%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.section-padding {
+  @apply py-16 md:py-20 lg:py-24;
+}
+
+.card-consistent {
+  @apply rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300;
+}
+
+.btn {
+  @apply rounded-lg;
+}
+
+.input, .select, .textarea {
+  @apply rounded-lg;
+}

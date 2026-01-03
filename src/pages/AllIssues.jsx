@@ -1,11 +1,11 @@
 // src/pages/AllIssues.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { FaMapMarkerAlt, FaChevronUp, FaEye, FaSearch, FaFilter, FaTimes } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaChevronUp, FaEye, FaSearch, FaFilter, FaTimes, FaSortAmountDown } from 'react-icons/fa';
 import useAuth from '../hooks/useAuth';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
@@ -22,6 +22,13 @@ const categories = [
 const statuses = ['Pending', 'In-Progress', 'Working', 'Resolved', 'Closed', 'Rejected'];
 const priorities = ['Normal', 'High'];
 
+const sortOptions = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'oldest', label: 'Oldest First' },
+    { value: 'mostUpvoted', label: 'Most Upvoted' },
+    { value: 'priority', label: 'Priority (High to Normal)' }
+];
+
 const AllIssues = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -33,6 +40,7 @@ const AllIssues = () => {
     const [category, setCategory] = useState('');
     const [status, setStatus] = useState('');
     const [priority, setPriority] = useState('');
+    const [sortBy, setSortBy] = useState('newest');
     const [page, setPage] = useState(1);
     const limit = 9;
 
@@ -110,8 +118,30 @@ const AllIssues = () => {
         }
     };
 
-    const issues = data?.issues || [];
+    const rawIssues = data?.issues || [];
     const pagination = data?.pagination || { currentPage: 1, totalPages: 1, totalItems: 0 };
+
+    // Sort issues based on selected sort option
+    const issues = useMemo(() => {
+        const sorted = [...rawIssues];
+
+        switch (sortBy) {
+            case 'newest':
+                return sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            case 'oldest':
+                return sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            case 'mostUpvoted':
+                return sorted.sort((a, b) => (b.upvotes?.length || 0) - (a.upvotes?.length || 0));
+            case 'priority':
+                return sorted.sort((a, b) => {
+                    if (a.priority === 'High' && b.priority !== 'High') return -1;
+                    if (a.priority !== 'High' && b.priority === 'High') return 1;
+                    return 0;
+                });
+            default:
+                return sorted;
+        }
+    }, [rawIssues, sortBy]);
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -142,7 +172,7 @@ const AllIssues = () => {
                     </button>
                 </form>
 
-                {/* Filter Dropdowns */}
+                {/* Filter and Sort Dropdowns */}
                 <div className="flex flex-wrap gap-3 items-center">
                     <FaFilter className="text-gray-500" />
 
@@ -176,6 +206,19 @@ const AllIssues = () => {
                         <option value="">All Priorities</option>
                         {priorities.map(p => (
                             <option key={p} value={p}>{p}</option>
+                        ))}
+                    </select>
+
+                    <div className="divider divider-horizontal mx-0"></div>
+
+                    <FaSortAmountDown className="text-gray-500" />
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="select select-bordered select-sm"
+                    >
+                        {sortOptions.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
                     </select>
 

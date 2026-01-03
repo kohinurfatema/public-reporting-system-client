@@ -29,6 +29,12 @@ import StaffAssignedIssues from "../pages/Dashboard/Staff/StaffAssignedIssues";
 import StaffProfile from "../pages/Dashboard/Staff/StaffProfile";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import PaymentCancel from "../pages/PaymentCancel";
+import About from "../pages/Static/About";
+import Contact from "../pages/Static/Contact";
+import FAQ from "../pages/Static/FAQ";
+import Help from "../pages/Static/Help";
+import Privacy from "../pages/Static/Privacy";
+import Terms from "../pages/Static/Terms";
 
 // NOTE: Please ensure the component files (e.g., AllIssues, Login, etc.)
 // are created in your 'src/pages' directory, even if they are placeholders for now.
@@ -49,22 +55,28 @@ export const router = createBrowserRouter([
       },
       // ✅ Meaningful Public Routes for Extra Pages
       {
-        path: "reports",
-        element: (
-          <div className="text-center py-20">
-            <h1 className="text-4xl font-bold">Reports Page</h1>
-            <p className="mt-4">Placeholder for the main Reports and Statistics page.</p>
-          </div>
-        ),
+        path: "about",
+        element: <About />,
       },
       {
-        path: "resources",
-        element: (
-          <div className="text-center py-20">
-            <h1 className="text-4xl font-bold">Resources Page</h1>
-            <p className="mt-4">Placeholder for FAQs, contact info, or system documentation.</p>
-          </div>
-        ),
+        path: "contact",
+        element: <Contact />,
+      },
+      {
+        path: "faq",
+        element: <FAQ />,
+      },
+      {
+        path: "help",
+        element: <Help />,
+      },
+      {
+        path: "privacy",
+        element: <Privacy />,
+      },
+      {
+        path: "terms",
+        element: <Terms />,
       },
       // Authentication Routes
       {
