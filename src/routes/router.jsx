@@ -101,21 +101,23 @@ export const router = createBrowserRouter([
         path: "payment-cancel",
         element: <PrivateRoute><PaymentCancel /></PrivateRoute>,
       },
-      // --- DASHBOARD ROUTES (Nested Structure) ---
+    ],
+  },
+  // --- DASHBOARD ROUTES (Separate from RootLayout - No general navbar/footer) ---
+  {
+    path: "/dashboard",
+    element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
+    errorElement: <NotFound />,
+    children: [
+      // 🎯 CITIZEN DASHBOARD (PARENT ROUTE)
       {
-        path: "dashboard",
-        element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
+        path: "citizen",
+        element: (
+          <RoleRoute allowedRoles={['citizen']}>
+            <CitizenDashboard />
+          </RoleRoute>
+        ),
         children: [
-          // 🎯 CITIZEN DASHBOARD (PARENT ROUTE)
-          {
-            // The main layout route /dashboard/citizen
-            path: "citizen",
-            element: (
-              <RoleRoute allowedRoles={['citizen']}>
-                <CitizenDashboard />
-              </RoleRoute>
-            ),
-            children: [
               // 1. Citizen Home (Stats Overview) - Index Route
               {
                 path: '',
@@ -141,11 +143,9 @@ export const router = createBrowserRouter([
                 element: <CitizenProfile />,
               },
               {
-                path: 'issue-details/:id', 
+                path: 'issue-details/:id',
                 element: <IssueDetails />,
               },
-
-
             ],
           },
           // ADMIN DASHBOARD (PARENT ROUTE)
@@ -216,9 +216,6 @@ export const router = createBrowserRouter([
               },
             ],
           },
-        ]
-      }
-
     ],
   },
 ]);
