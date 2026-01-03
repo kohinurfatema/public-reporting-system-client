@@ -57,18 +57,18 @@ const LatestResolvedIssues = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {issues.map((issue) => (
-                    <div key={issue._id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-base-200">
+                    <div key={issue._id} className="card bg-gradient-to-br from-base-100 to-base-200 shadow-lg hover:shadow-2xl transition-all duration-300 border border-success/20 hover:border-success/50 overflow-hidden group">
                         {/* Image */}
-                        <figure className="h-48 bg-gray-200">
+                        <figure className="h-48 bg-gray-100 relative overflow-hidden">
                             {issue.imageUrl ? (
                                 <img
                                     src={issue.imageUrl}
                                     alt={issue.title}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 />
                             ) : (
-                                <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20">
-                                    <FaCheckCircle className="text-6xl text-success opacity-50" />
+                                <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-success/10 to-emerald-500/10">
+                                    <FaCheckCircle className="text-5xl text-success opacity-40" />
                                 </div>
                             )}
                         </figure>
@@ -76,7 +76,7 @@ const LatestResolvedIssues = () => {
                         <div className="card-body p-5">
                             {/* Badges */}
                             <div className="flex flex-wrap gap-2 mb-2">
-                                <span className="badge badge-success text-white">
+                                <span className="badge badge-success text-white font-medium">
                                     <FaCheckCircle className="mr-1" /> Resolved
                                 </span>
                                 <span className="badge badge-outline">{issue.category}</span>
@@ -86,25 +86,27 @@ const LatestResolvedIssues = () => {
                             </div>
 
                             {/* Title */}
-                            <h3 className="card-title text-lg line-clamp-2">{issue.title}</h3>
+                            <h3 className="card-title text-base font-bold line-clamp-2 mb-2">
+                                {issue.title}
+                            </h3>
 
                             {/* Location */}
-                            <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                            <p className="text-sm text-base-content/60 flex items-center gap-1">
                                 <FaMapMarkerAlt className="text-error" />
                                 <span className="line-clamp-1">{issue.location}</span>
                             </p>
 
                             {/* Footer */}
-                            <div className="card-actions justify-between items-center mt-4 pt-4 border-t">
-                                <div className="flex items-center gap-1 text-sm text-gray-500">
+                            <div className="card-actions justify-between items-center mt-4 pt-3 border-t">
+                                <div className="flex items-center gap-1 text-sm">
                                     <FaChevronUp className="text-primary" />
-                                    <span>{issue.upvotes?.length || 0} upvotes</span>
+                                    <span className="font-medium">{issue.upvotes?.length || 0}</span>
                                 </div>
                                 <Link
                                     to={`/issue/${issue._id}`}
                                     className="btn btn-primary btn-sm"
                                 >
-                                    <FaEye /> View Details
+                                    <FaEye /> View
                                 </Link>
                             </div>
                         </div>

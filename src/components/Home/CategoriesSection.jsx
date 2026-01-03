@@ -68,22 +68,22 @@ const CategoriesSection = () => {
                         <Link
                             key={index}
                             to={"/all-issues?category=" + category.name}
-                            className="group card bg-base-100 border border-base-200 hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300"
+                            className="group card bg-base-100 border-2 border-base-300 hover:border-primary shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
                         >
                             <div className="card-body">
                                 <div className="flex items-start gap-4">
-                                    <div className={"p-3 rounded-xl bg-gradient-to-br " + category.color + " text-white shadow-lg group-hover:scale-110 transition-transform duration-300"}>
-                                        <category.icon className="text-2xl" />
+                                    <div className={"p-4 rounded-2xl bg-gradient-to-br " + category.color + " text-white shadow-xl group-hover:scale-110 group-hover:shadow-2xl transition-all duration-300"}>
+                                        <category.icon className="text-3xl" />
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="font-bold text-lg group-hover:text-primary transition-colors">
+                                        <h3 className="font-bold text-xl group-hover:text-primary transition-colors mb-2">
                                             {category.name}
                                         </h3>
-                                        <p className="text-sm text-base-content/60 mt-1">
+                                        <p className="text-sm text-base-content/70 leading-relaxed">
                                             {category.description}
                                         </p>
-                                        <div className="mt-3">
-                                            <span className="badge badge-ghost badge-sm">
+                                        <div className="mt-4">
+                                            <span className="badge badge-primary badge-md font-semibold">
                                                 {category.count} reports
                                             </span>
                                         </div>

@@ -33,14 +33,23 @@ const Navbar = () => {
             <li><NavLink to="/all-issues" className={({ isActive }) => isActive ? 'active font-semibold' : ''}>All Issues</NavLink></li>
             <li><NavLink to="/about" className={({ isActive }) => isActive ? 'active font-semibold' : ''}>About</NavLink></li>
             <li>
-                <details className="dropdown">
-                    <summary className="cursor-pointer flex items-center gap-1">
+                <details>
+                    <summary className="flex items-center gap-1">
                         Resources <FaChevronDown className="h-3 w-3" />
                     </summary>
-                    <ul className="menu dropdown-content bg-base-100 rounded-box z-[100] w-52 p-2 shadow-lg mt-2">
-                        <li><NavLink to="/contact">Contact Us</NavLink></li>
-                        <li><NavLink to="/faq">FAQ</NavLink></li>
+                    <ul className="p-2 bg-base-100 rounded-box w-52 shadow-xl border border-base-200">
+                        <li className="menu-title">
+                            <span className="text-xs font-semibold">Help & Support</span>
+                        </li>
                         <li><NavLink to="/help">Help Center</NavLink></li>
+                        <li><NavLink to="/faq">FAQ</NavLink></li>
+                        <li><NavLink to="/contact">Contact Us</NavLink></li>
+                        <div className="divider my-1"></div>
+                        <li className="menu-title">
+                            <span className="text-xs font-semibold">Legal & Policies</span>
+                        </li>
+                        <li><NavLink to="/terms">Terms of Service</NavLink></li>
+                        <li><NavLink to="/privacy">Privacy Policy</NavLink></li>
                     </ul>
                 </details>
             </li>

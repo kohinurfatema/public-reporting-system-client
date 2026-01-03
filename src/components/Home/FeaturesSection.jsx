@@ -8,37 +8,49 @@ const features = [
         icon: FaMapMarkerAlt,
         title: 'Location-Based Reporting',
         description: 'Report issues with precise location details. Our system helps authorities locate and address problems quickly.',
-        color: 'text-error'
+        color: 'text-error',
+        bgColor: 'bg-error/10',
+        borderColor: 'border-error/30'
     },
     {
         icon: FaBell,
         title: 'Real-Time Updates',
         description: 'Get instant notifications when your reported issue status changes. Stay informed every step of the way.',
-        color: 'text-warning'
+        color: 'text-warning',
+        bgColor: 'bg-warning/10',
+        borderColor: 'border-warning/30'
     },
     {
         icon: FaChartLine,
         title: 'Track Progress',
         description: 'Monitor the complete lifecycle of your report from submission to resolution with our detailed timeline.',
-        color: 'text-success'
+        color: 'text-success',
+        bgColor: 'bg-success/10',
+        borderColor: 'border-success/30'
     },
     {
         icon: FaUsers,
         title: 'Community Engagement',
         description: 'Upvote important issues to prioritize them. Help your community by highlighting critical problems.',
-        color: 'text-primary'
+        color: 'text-primary',
+        bgColor: 'bg-primary/10',
+        borderColor: 'border-primary/30'
     },
     {
         icon: FaShieldAlt,
         title: 'Verified Staff',
         description: 'Our trained municipal staff are assigned to handle issues professionally and efficiently.',
-        color: 'text-secondary'
+        color: 'text-secondary',
+        bgColor: 'bg-secondary/10',
+        borderColor: 'border-secondary/30'
     },
     {
         icon: FaMobileAlt,
         title: 'Mobile Responsive',
         description: 'Report issues on-the-go from any device. Our platform works seamlessly on mobile, tablet, and desktop.',
-        color: 'text-info'
+        color: 'text-info',
+        bgColor: 'bg-info/10',
+        borderColor: 'border-info/30'
     }
 ];
 
@@ -57,14 +69,14 @@ const FeaturesSection = () => {
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                            className={`card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 ${feature.borderColor} ${feature.bgColor}`}
                         >
-                            <div className="card-body items-center text-center">
-                                <div className={`p-4 rounded-full bg-base-200 mb-4 ${feature.color}`}>
-                                    <feature.icon className="text-4xl" />
+                            <div className="card-body items-center text-center p-6">
+                                <div className={`p-5 rounded-2xl mb-4 ${feature.color} shadow-lg`} style={{background: `linear-gradient(135deg, rgba(var(--${feature.color.replace('text-', '')}-rgb, 0.15), rgba(var(--${feature.color.replace('text-', '')}-rgb, 0.05))`}}>
+                                    <feature.icon className="text-5xl" />
                                 </div>
-                                <h3 className="card-title text-xl">{feature.title}</h3>
-                                <p className="text-gray-600">{feature.description}</p>
+                                <h3 className="card-title text-xl font-bold mb-2">{feature.title}</h3>
+                                <p className="text-base-content/70 leading-relaxed">{feature.description}</p>
                             </div>
                         </div>
                     ))}
