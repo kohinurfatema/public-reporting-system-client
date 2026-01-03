@@ -1,8 +1,5 @@
 {
   "projects": {
-    "default": "public-reporting-system-351f1",
-    "prod": "public-reporting-system-351f1"
-  },
-  "targets": {},
-  "etags": {}
+    "default": "public-reporting-system-351f1"
+  }
 }
