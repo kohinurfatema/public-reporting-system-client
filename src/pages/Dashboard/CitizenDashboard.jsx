@@ -1,13 +1,13 @@
 // src/pages/Dashboard/CitizenDashboard.jsx
 
 import React from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router';
+import { NavLink, Outlet } from 'react-router';
 import useAuth from '../../hooks/useAuth';
+import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
 import { FaTachometerAlt, FaPlusCircle, FaClipboardList, FaUserCircle, FaHome } from 'react-icons/fa';
 
 const CitizenDashboard = () => {
     const { user } = useAuth();
-    const location = useLocation(); // Retained but less necessary with Outlet focus
 
     // Define the sidebar links for the Citizen Role (using kebab-case paths)
     const citizenLinks = (
@@ -43,15 +43,13 @@ const CitizenDashboard = () => {
 
             {/* --- CONTENT AREA --- */}
             <div className="drawer-content flex flex-col min-h-screen">
-                {/* Mobile Menu Button - Top Header Bar */}
-                <div className="sticky top-0 z-30 flex h-16 w-full items-center bg-base-200 bg-opacity-90 backdrop-blur lg:hidden px-4 shadow-sm">
-                    <label htmlFor="my-drawer-2" className="btn btn-ghost drawer-button gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-6 h-6 stroke-current">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                        Menu
-                    </label>
-                </div>
+                {/* Dashboard Top Navbar */}
+                <DashboardNavbar
+                    role="citizen"
+                    dashboardHomePath="/dashboard/citizen"
+                    profilePath="/dashboard/citizen/profile"
+                    drawerId="my-drawer-2"
+                />
 
                 {/* Main Content Area */}
                 <div className="flex-1 p-4 md:p-8 w-full">

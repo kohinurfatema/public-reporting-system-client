@@ -3,6 +3,7 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router';
 import useAuth from '../../../hooks/useAuth';
+import DashboardNavbar from '../../../components/Dashboard/DashboardNavbar';
 import { FaTachometerAlt, FaTasks, FaUserCircle, FaHome, FaGlobe } from 'react-icons/fa';
 
 const StaffDashboard = () => {
@@ -37,15 +38,13 @@ const StaffDashboard = () => {
 
             {/* Content Area */}
             <div className="drawer-content flex flex-col min-h-screen">
-                {/* Mobile Menu Button */}
-                <div className="sticky top-0 z-30 flex h-16 w-full items-center bg-base-200 bg-opacity-90 backdrop-blur lg:hidden px-4 shadow-sm">
-                    <label htmlFor="staff-drawer" className="btn btn-ghost drawer-button gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-6 h-6 stroke-current">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                        Menu
-                    </label>
-                </div>
+                {/* Dashboard Top Navbar */}
+                <DashboardNavbar
+                    role="staff"
+                    dashboardHomePath="/dashboard/staff"
+                    profilePath="/dashboard/staff/profile"
+                    drawerId="staff-drawer"
+                />
 
                 {/* Main Content Area */}
                 <div className="flex-1 p-4 md:p-8 w-full">
