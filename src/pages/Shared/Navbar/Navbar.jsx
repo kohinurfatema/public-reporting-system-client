@@ -132,7 +132,6 @@ const Navbar = () => {
                                     {roleLoading && <span className="loading loading-spinner loading-xs"></span>}
                                 </Link>
                             </li>
-                            <li><Link to="/profile">Profile Settings</Link></li>
                             <div className="divider my-0"></div>
                             <li><button onClick={logOut} className="text-error">Logout</button></li>
                         </ul>
